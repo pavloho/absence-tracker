@@ -90,28 +90,29 @@ export default function ReportPage() {
                 style={{ animationDelay: `${idx * 80}ms` }}
               >
                 {/* Project Header */}
-                <div className="px-6 py-5 border-b border-slate-50 flex items-start justify-between">
-                  <div>
-                    <h2 className="text-xl font-bold text-slate-900">{report.project.name}</h2>
-                    <div className="flex items-center gap-4 mt-1.5 text-sm text-slate-400">
-                      <span>
-                        {String(report.period.month).padStart(2, '0')}.{report.period.year} &middot;{' '}
-                        01.{String(report.period.month).padStart(2, '0')} &ndash;{' '}
-                        {report.period.last_day}.{String(report.period.month).padStart(2, '0')}
-                      </span>
-                      <span className="flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
-                        Total Absentees: <span className="font-semibold text-slate-600">{report.total_absentees}</span>
-                      </span>
-                    </div>
+                <div className="px-6 py-5 border-b border-slate-50">
+                  <div className="flex items-center gap-3">
+                    {report.project.logo_url ? (
+                      <img
+                        src={report.project.logo_url}
+                        alt={report.project.name}
+                        className="h-9 object-contain"
+                      />
+                    ) : (
+                      <h2 className="text-xl font-bold text-slate-900">{report.project.name}</h2>
+                    )}
                   </div>
-                  {report.project.logo_url && (
-                    <img
-                      src={report.project.logo_url}
-                      alt={report.project.name}
-                      className="w-12 h-12 rounded-xl object-contain bg-slate-50 p-1"
-                    />
-                  )}
+                  <div className="flex items-center gap-4 mt-1.5 text-sm text-slate-400">
+                    <span>
+                      {String(report.period.month).padStart(2, '0')}.{report.period.year} &middot;{' '}
+                      01.{String(report.period.month).padStart(2, '0')} &ndash;{' '}
+                      {report.period.last_day}.{String(report.period.month).padStart(2, '0')}
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+                      Total Absentees: <span className="font-semibold text-slate-600">{report.total_absentees}</span>
+                    </span>
+                  </div>
                 </div>
 
                 {/* Employee Table */}
