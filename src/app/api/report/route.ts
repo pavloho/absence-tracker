@@ -1,0 +1,93 @@
+import { sql } from '@/lib/db';
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(req: NextRequest) {
+  const month = req.nextUrl.searchParams.get('month');
+  const year = req.nextUrl.searchParams.get('year');
+
+  const now = new Date();
+  const m = month ? Number(month) : now.getMonth() + 1;
+  const y = year ? Number(year) : now.getFullYear();
+
+  const startDate = `${y}-${String(m).padStart(2, '0')}-01`;
+  const lastDay = new Date(y, m, 0).getDate();
+  const endDate = `${y}-${String(m).padStart(2, '0')}-${lastDay}`;
+
+  const { rows: projects } = await sql`SELECT * FROM projects ORDER BY name`;
+
+  const result = [];
+
+  for (const project of projects) {
+    const { rows: absences } = await sql`
+      SELECT a.*, e.first_name, e.last_name, e.avatar_url
+      FROM absences a
+      JOIN employees e ON a.employee_id = e.id
+      WHERE a.project_id = ${project.id}
+        AND a.date_from <= ${endDate}::date
+        AND COALESCE(a.date_to, a.date_from) >= ${startDate}::date
+      ORDER BY e.last_name, e.first_name, a.date_from
+    `;
+
+    const employeeMap = new Map<number, {
+      id: number;
+      first_name: string;
+      last_name: string;
+      avatar_url: string | null;
+      absences: Array<{
+        id: number;
+        type: string;
+        date_from: string;
+        date_to: string | null;
+      }>;
+      total_days: number;
+    }>();
+
+    for (const ab of absences) {
+      if (!employeeMap.has(ab.employee_id)) {
+        employeeMap.set(ab.employee_id, {
+          id: ab.employee_id,
+          first_name: ab.first_name,
+          last_name: ab.last_name,
+          avatar_url: ab.avatar_url,
+          absences: [],
+          total_days: 0,
+        });
+      }
+
+      const emp = employeeMap.get(ab.employee_id)!;
+
+      const from = new Date(ab.date_from);
+      const to = ab.date_to ? new Date(ab.date_to) : from;
+      const clampedFrom = from < new Date(startDate) ? new Date(startDate) : from;
+      const clampedTo = to > new Date(endDate) ? new Date(endDate) : to;
+      const days = Math.floor((clampedTo.getTime() - clampedFrom.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+
+      emp.total_days += days;
+      emp.absences.push({
+        id: ab.id,
+        type: ab.type,
+        date_from: ab.date_from,
+        date_to: ab.date_to,
+      });
+    }
+
+    result.push({
+      project: {
+        id: project.id,
+        name: project.name,
+        logo_url: project.logo_url,
+      },
+      period: {
+        start: startDate,
+        end: endDate,
+        month: m,
+        year: y,
+        last_day: lastDay,
+      },
+      employees: Array.from(employeeMap.values()),
+      total_absentees: employeeMap.size,
+    });
+  }
+
+  return NextResponse.json(result);
+}
