@@ -84,7 +84,9 @@ export async function GET(req: NextRequest) {
         year: y,
         last_day: lastDay,
       },
-      employees: Array.from(employeeMap.values()),
+      employees: Array.from(employeeMap.values()).sort((a, b) =>
+        a.last_name.localeCompare(b.last_name) || a.first_name.localeCompare(b.first_name)
+      ),
       total_absentees: employeeMap.size,
     });
   }
