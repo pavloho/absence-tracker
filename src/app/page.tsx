@@ -132,7 +132,7 @@ export default function ReportPage() {
                         <img
                           src={report.project.logo_url}
                           alt={report.project.name}
-                          className="h-6 w-auto object-contain"
+                          className="h-7 max-w-[120px] object-contain object-left"
                         />
                       ) : (
                         <span className="text-base font-bold text-slate-900">{report.project.name}</span>
