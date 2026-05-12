@@ -40,6 +40,8 @@ export default function AbsencesPage() {
   const [formType, setFormType] = useState('Holiday');
   const [formDateFrom, setFormDateFrom] = useState('');
   const [formDateTo, setFormDateTo] = useState('');
+  const [formDates, setFormDates] = useState<string[]>([]);
+  const [formDateMode, setFormDateMode] = useState<'range' | 'multiple'>('range');
 
   const [bulkProjectId, setBulkProjectId] = useState('');
   const [bulkType, setBulkType] = useState('Holiday');
@@ -68,6 +70,26 @@ export default function AbsencesPage() {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
+  const handleEmployeeChange = (empId: string) => {
+    setFormEmployeeId(empId);
+    if (empId) {
+      const emp = employees.find((e) => e.id === Number(empId));
+      if (emp && emp.projects?.length === 1) {
+        setFormProjectId(String(emp.projects[0].id));
+      }
+    }
+  };
+
+  const addDate = (date: string) => {
+    if (date && !formDates.includes(date)) {
+      setFormDates((prev) => [...prev, date].sort());
+    }
+  };
+
+  const removeDate = (date: string) => {
+    setFormDates((prev) => prev.filter((d) => d !== date));
+  };
+
   const openCreate = () => {
     setEditing(null);
     setFormEmployeeId('');
@@ -75,6 +97,8 @@ export default function AbsencesPage() {
     setFormType('Holiday');
     setFormDateFrom('');
     setFormDateTo('');
+    setFormDates([]);
+    setFormDateMode('range');
     setModalOpen(true);
   };
 
@@ -90,25 +114,46 @@ export default function AbsencesPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const body = {
-      employee_id: Number(formEmployeeId),
-      project_id: Number(formProjectId),
-      type: formType,
-      date_from: formDateFrom,
-      date_to: formDateTo || null,
-    };
 
     if (editing) {
       await fetch(`/api/absences/${editing.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+        body: JSON.stringify({
+          employee_id: Number(formEmployeeId),
+          project_id: Number(formProjectId),
+          type: formType,
+          date_from: formDateFrom,
+          date_to: formDateTo || null,
+        }),
       });
+    } else if (formDateMode === 'multiple' && formDates.length > 0) {
+      await Promise.all(
+        formDates.map((date) =>
+          fetch('/api/absences', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              employee_id: Number(formEmployeeId),
+              project_id: Number(formProjectId),
+              type: formType,
+              date_from: date,
+              date_to: null,
+            }),
+          })
+        )
+      );
     } else {
       await fetch('/api/absences', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+        body: JSON.stringify({
+          employee_id: Number(formEmployeeId),
+          project_id: Number(formProjectId),
+          type: formType,
+          date_from: formDateFrom,
+          date_to: formDateTo || null,
+        }),
       });
     }
     setModalOpen(false);
@@ -262,30 +307,33 @@ export default function AbsencesPage() {
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editing ? 'Edit Absence' : 'Add Absence'}>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Project</label>
-            <select
-              value={formProjectId}
-              onChange={(e) => { setFormProjectId(e.target.value); setFormEmployeeId(''); }}
-              className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10"
-              required
-            >
-              <option value="">Select project...</option>
-              {projects.map((p) => (
-                <option key={p.id} value={p.id}>{p.name}</option>
-              ))}
-            </select>
-          </div>
-          <div>
             <label className="block text-sm font-medium text-slate-700 mb-1.5">Employee</label>
             <select
               value={formEmployeeId}
-              onChange={(e) => setFormEmployeeId(e.target.value)}
+              onChange={(e) => handleEmployeeChange(e.target.value)}
               className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10"
               required
             >
               <option value="">Select employee...</option>
-              {filteredEmployees.map((e) => (
+              {employees.map((e) => (
                 <option key={e.id} value={e.id}>{e.first_name} {e.last_name}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1.5">Project</label>
+            <select
+              value={formProjectId}
+              onChange={(e) => setFormProjectId(e.target.value)}
+              className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+              required
+            >
+              <option value="">Select project...</option>
+              {(formEmployeeId
+                ? employees.find((e) => e.id === Number(formEmployeeId))?.projects || []
+                : projects
+              ).map((p) => (
+                <option key={p.id} value={p.id}>{p.name}</option>
               ))}
             </select>
           </div>
@@ -301,33 +349,107 @@ export default function AbsencesPage() {
               <option value="Vacation">Vacation</option>
             </select>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+
+          {!editing && (
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Date From</label>
-              <input
-                type="date"
-                value={formDateFrom}
-                onChange={(e) => setFormDateFrom(e.target.value)}
-                className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10"
-                required
-              />
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">Date mode</label>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setFormDateMode('range')}
+                  className={`flex-1 px-3 py-2 rounded-xl text-xs font-medium border transition-all ${
+                    formDateMode === 'range'
+                      ? 'bg-slate-900 text-white border-slate-900'
+                      : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
+                  }`}
+                >
+                  Single / Range
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormDateMode('multiple')}
+                  className={`flex-1 px-3 py-2 rounded-xl text-xs font-medium border transition-all ${
+                    formDateMode === 'multiple'
+                      ? 'bg-slate-900 text-white border-slate-900'
+                      : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
+                  }`}
+                >
+                  Multiple dates
+                </button>
+              </div>
             </div>
+          )}
+
+          {editing || formDateMode === 'range' ? (
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">Date From</label>
+                <input
+                  type="date"
+                  value={formDateFrom}
+                  onChange={(e) => setFormDateFrom(e.target.value)}
+                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">Date To <span className="text-slate-400 font-normal">(optional)</span></label>
+                <input
+                  type="date"
+                  value={formDateTo}
+                  onChange={(e) => setFormDateTo(e.target.value)}
+                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+                />
+              </div>
+            </div>
+          ) : (
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Date To <span className="text-slate-400 font-normal">(optional)</span></label>
-              <input
-                type="date"
-                value={formDateTo}
-                onChange={(e) => setFormDateTo(e.target.value)}
-                className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10"
-              />
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">Dates</label>
+              <div className="flex gap-2 mb-2">
+                <input
+                  type="date"
+                  id="multiDateInput"
+                  className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const input = document.getElementById('multiDateInput') as HTMLInputElement;
+                    if (input?.value) { addDate(input.value); input.value = ''; }
+                  }}
+                  className="px-4 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-medium hover:bg-slate-800 transition-colors"
+                >
+                  Add
+                </button>
+              </div>
+              {formDates.length > 0 && (
+                <div className="flex flex-wrap gap-1.5">
+                  {formDates.map((d) => (
+                    <span key={d} className="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 text-slate-700 rounded-full text-xs font-medium">
+                      {d}
+                      <button type="button" onClick={() => removeDate(d)} className="text-slate-400 hover:text-red-500 transition-colors">
+                        &times;
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+              {formDates.length === 0 && (
+                <p className="text-xs text-slate-400">Pick dates and click Add</p>
+              )}
             </div>
-          </div>
+          )}
+
           <div className="flex gap-3 pt-2">
             <button type="button" onClick={() => setModalOpen(false)} className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors">
               Cancel
             </button>
-            <button type="submit" className="flex-1 bg-slate-900 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-slate-800 transition-colors">
-              {editing ? 'Save Changes' : 'Add Absence'}
+            <button
+              type="submit"
+              disabled={formDateMode === 'multiple' && !editing && formDates.length === 0}
+              className="flex-1 bg-slate-900 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {editing ? 'Save Changes' : formDateMode === 'multiple' && formDates.length > 1 ? `Add ${formDates.length} Absences` : 'Add Absence'}
             </button>
           </div>
         </form>
