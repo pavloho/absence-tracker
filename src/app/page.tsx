@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Avatar } from '@/components/Avatar';
 import { AbsenceBadge } from '@/components/AbsenceBadge';
-import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
+import { IconChevronLeft, IconChevronRight, IconFilter } from '@tabler/icons-react';
 
 interface Absence {
   id: number;
@@ -40,6 +40,7 @@ export default function ReportPage() {
   const [year, setYear] = useState(now.getFullYear());
   const [data, setData] = useState<ProjectReport[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeProject, setActiveProject] = useState<number | null>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -98,8 +99,40 @@ export default function ReportPage() {
             <p className="text-sm mt-1">Add projects in the admin panel to get started.</p>
           </div>
         ) : (
-          <div className="space-y-8">
-            {data.map((report, idx) => {
+          <div className="space-y-6">
+            {/* Project filter */}
+            {data.length > 1 && (
+              <div className="flex items-center gap-2">
+                <IconFilter size={14} className="text-slate-400" />
+                <div className="flex flex-wrap gap-1.5">
+                  <button
+                    onClick={() => setActiveProject(null)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                      activeProject === null
+                        ? 'bg-slate-900 text-white'
+                        : 'bg-white text-slate-500 border border-slate-200 hover:border-slate-300 hover:text-slate-700'
+                    }`}
+                  >
+                    All projects
+                  </button>
+                  {data.map((report) => (
+                    <button
+                      key={report.project.id}
+                      onClick={() => setActiveProject(report.project.id)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                        activeProject === report.project.id
+                          ? 'bg-slate-900 text-white'
+                          : 'bg-white text-slate-500 border border-slate-200 hover:border-slate-300 hover:text-slate-700'
+                      }`}
+                    >
+                      {report.project.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {data.filter((r) => activeProject === null || r.project.id === activeProject).map((report, idx) => {
               const totalProjectDays = report.employees.reduce((s, e) => s + e.total_days, 0);
 
               return (
