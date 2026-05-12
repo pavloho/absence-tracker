@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Modal } from '@/components/Modal';
 import { Avatar } from '@/components/Avatar';
 import { IconPlus } from '@tabler/icons-react';
+import { ImageUpload } from '@/components/ImageUpload';
 
 interface Project {
   id: number;
@@ -210,16 +211,7 @@ export default function EmployeesPage() {
               />
             </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Avatar URL <span className="text-slate-400 font-normal">(optional)</span></label>
-            <input
-              type="url"
-              value={avatarUrl}
-              onChange={(e) => setAvatarUrl(e.target.value)}
-              className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-300"
-              placeholder="https://example.com/avatar.jpg"
-            />
-          </div>
+          <ImageUpload label="Avatar" value={avatarUrl} onChange={setAvatarUrl} />
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">Projects</label>
             <div className="flex flex-wrap gap-2">

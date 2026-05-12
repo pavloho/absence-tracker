@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Modal } from '@/components/Modal';
-import { IconPlus, IconPencil, IconTrash } from '@tabler/icons-react';
+import { IconPlus } from '@tabler/icons-react';
+import { ImageUpload } from '@/components/ImageUpload';
 
 interface Project {
   id: number;
@@ -141,16 +142,7 @@ export default function ProjectsPage() {
               required
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Logo URL <span className="text-slate-400 font-normal">(optional)</span></label>
-            <input
-              type="url"
-              value={logoUrl}
-              onChange={(e) => setLogoUrl(e.target.value)}
-              className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-300"
-              placeholder="https://example.com/logo.png"
-            />
-          </div>
+          <ImageUpload label="Logo" value={logoUrl} onChange={setLogoUrl} />
           <div className="flex gap-3 pt-2">
             <button
               type="button"
