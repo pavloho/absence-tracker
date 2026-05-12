@@ -154,7 +154,7 @@ export default function ReportPage() {
                                   avatarUrl={emp.avatar_url}
                                 />
                                 <span className="font-medium text-slate-800 text-sm">
-                                  {emp.first_name} {emp.last_name}
+                                  {emp.last_name} {emp.first_name}
                                 </span>
                               </div>
                             </td>
