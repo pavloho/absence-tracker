@@ -144,16 +144,16 @@ export default function ReportPage() {
                     <>
                       {/* Table header */}
                       <div className="px-6 py-2 flex items-center text-[11px] font-semibold text-slate-400 uppercase tracking-wider border-b border-slate-50">
-                        <div className="flex-1">Employee</div>
-                        <div className="w-[52px] text-center">Days</div>
-                        <div className="w-[280px] text-right">Absences</div>
+                        <div className="w-[220px] shrink-0">Employee</div>
+                        <div className="w-[52px] shrink-0 text-center">Days</div>
+                        <div className="flex-1 text-right">Absences</div>
                       </div>
 
                       {/* Rows */}
                       <div className="divide-y divide-slate-50">
                         {report.employees.map((emp) => (
-                          <div key={emp.id} className="px-6 py-3 flex items-center gap-3 hover:bg-slate-50/50 transition-colors">
-                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                          <div key={emp.id} className="px-6 py-3 flex items-start gap-3 hover:bg-slate-50/50 transition-colors">
+                            <div className="flex items-center gap-3 w-[220px] shrink-0 min-w-0 pt-0.5">
                               <Avatar
                                 firstName={emp.first_name}
                                 lastName={emp.last_name}
@@ -164,12 +164,12 @@ export default function ReportPage() {
                                 {emp.last_name} {emp.first_name}
                               </span>
                             </div>
-                            <div className="w-[52px] text-center">
+                            <div className="w-[52px] shrink-0 flex justify-center pt-0.5">
                               <span className="inline-flex items-center justify-center min-w-[28px] h-7 rounded-md bg-slate-100 text-slate-700 text-[13px] font-bold px-1.5">
                                 {emp.total_days}
                               </span>
                             </div>
-                            <div className="w-[280px] flex flex-wrap gap-1.5 justify-end">
+                            <div className="flex-1 flex flex-wrap gap-1.5 justify-end">
                               {emp.absences.map((ab) => (
                                 <AbsenceBadge
                                   key={ab.id}
