@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Avatar } from '@/components/Avatar';
 import { AbsenceBadge } from '@/components/AbsenceBadge';
-import { IconChevronLeft, IconChevronRight, IconFilter } from '@tabler/icons-react';
+import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 
 interface Absence {
   id: number;
@@ -102,9 +102,7 @@ export default function ReportPage() {
           <div className="space-y-6">
             {/* Project filter */}
             {data.length > 1 && (
-              <div className="flex items-center gap-2">
-                <IconFilter size={14} className="text-slate-400" />
-                <div className="flex flex-wrap gap-1.5">
+              <div className="flex flex-wrap gap-1.5">
                   <button
                     onClick={() => setActiveProject(null)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
@@ -128,7 +126,6 @@ export default function ReportPage() {
                       {report.project.name}
                     </button>
                   ))}
-                </div>
               </div>
             )}
 
