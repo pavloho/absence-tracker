@@ -65,9 +65,25 @@ export default function ReportPage() {
       {/* Header */}
       <header className="bg-white border-b border-slate-200/70 sticky top-0 z-10">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-          <h1 className="text-[13px] font-bold text-slate-500 tracking-[0.08em] uppercase">
-            Absence Report
-          </h1>
+          <div className="flex items-center gap-4">
+            <h1 className="text-[13px] font-bold text-slate-500 tracking-[0.08em] uppercase">
+              Absence Report
+            </h1>
+            {!loading && data.length > 1 && (
+              <select
+                value={activeProject ?? ''}
+                onChange={(e) => setActiveProject(e.target.value ? Number(e.target.value) : null)}
+                className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900/10 cursor-pointer"
+              >
+                <option value="">All projects</option>
+                {data.map((report) => (
+                  <option key={report.project.id} value={report.project.id}>
+                    {report.project.name}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
           <div className="flex items-center gap-0.5">
             <button
               onClick={prevMonth}
@@ -100,35 +116,6 @@ export default function ReportPage() {
           </div>
         ) : (
           <div className="space-y-6">
-            {/* Project filter */}
-            {data.length > 1 && (
-              <div className="flex flex-wrap gap-1.5">
-                  <button
-                    onClick={() => setActiveProject(null)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
-                      activeProject === null
-                        ? 'bg-slate-900 text-white'
-                        : 'bg-white text-slate-500 border border-slate-200 hover:border-slate-300 hover:text-slate-700'
-                    }`}
-                  >
-                    All projects
-                  </button>
-                  {data.map((report) => (
-                    <button
-                      key={report.project.id}
-                      onClick={() => setActiveProject(report.project.id)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
-                        activeProject === report.project.id
-                          ? 'bg-slate-900 text-white'
-                          : 'bg-white text-slate-500 border border-slate-200 hover:border-slate-300 hover:text-slate-700'
-                      }`}
-                    >
-                      {report.project.name}
-                    </button>
-                  ))}
-              </div>
-            )}
-
             {data.filter((r) => activeProject === null || r.project.id === activeProject).map((report, idx) => {
               const totalProjectDays = report.employees.reduce((s, e) => s + e.total_days, 0);
 
