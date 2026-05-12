@@ -143,7 +143,7 @@ export default function ReportPage() {
                   ) : (
                     <>
                       {/* Table header */}
-                      <div className="px-6 py-2 flex items-center text-[11px] font-semibold text-slate-400 uppercase tracking-wider border-b border-slate-50">
+                      <div className="px-6 py-2 flex items-center gap-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider border-b border-slate-50">
                         <div className="w-[220px] shrink-0">Employee</div>
                         <div className="w-[52px] shrink-0 text-center">Days</div>
                         <div className="flex-1 text-right">Absences</div>
