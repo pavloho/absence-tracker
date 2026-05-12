@@ -145,7 +145,7 @@ export default function ReportPage() {
                       {/* Table header */}
                       <div className="px-6 py-2 flex items-center text-[11px] font-semibold text-slate-400 uppercase tracking-wider border-b border-slate-50">
                         <div className="flex-1">Employee</div>
-                        <div className="w-16 text-center">Days</div>
+                        <div className="w-[52px] text-center">Days</div>
                         <div className="w-[280px] text-right">Absences</div>
                       </div>
 
@@ -164,8 +164,8 @@ export default function ReportPage() {
                                 {emp.last_name} {emp.first_name}
                               </span>
                             </div>
-                            <div className="w-16 text-center">
-                              <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-900 text-white text-sm font-bold">
+                            <div className="w-[52px] text-center">
+                              <span className="inline-flex items-center justify-center min-w-[28px] h-7 rounded-md bg-slate-100 text-slate-700 text-[13px] font-bold px-1.5">
                                 {emp.total_days}
                               </span>
                             </div>
