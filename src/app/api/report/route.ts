@@ -27,7 +27,9 @@ export async function GET(req: NextRequest) {
     const totalEmployees = totalCountRows[0]?.total ?? 0;
 
     const { rows: absences } = await sql`
-      SELECT a.*, e.first_name, e.last_name, e.avatar_url
+      SELECT a.id, a.employee_id, a.project_id, a.type,
+             a.date_from::text as date_from, a.date_to::text as date_to,
+             e.first_name, e.last_name, e.avatar_url
       FROM absences a
       JOIN employees e ON a.employee_id = e.id
       WHERE a.project_id = ${project.id}
@@ -64,11 +66,14 @@ export async function GET(req: NextRequest) {
 
       const emp = employeeMap.get(ab.employee_id)!;
 
-      const from = new Date(ab.date_from);
-      const to = ab.date_to ? new Date(ab.date_to) : from;
-      const clampedFrom = from < new Date(startDate) ? new Date(startDate) : from;
-      const clampedTo = to > new Date(endDate) ? new Date(endDate) : to;
-      const days = Math.floor((clampedTo.getTime() - clampedFrom.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+      const toUTC = (d: string) => new Date(d + 'T00:00:00Z');
+      const from = toUTC(ab.date_from);
+      const to = ab.date_to ? toUTC(ab.date_to) : from;
+      const periodStart = toUTC(startDate);
+      const periodEnd = toUTC(endDate);
+      const clampedFrom = from < periodStart ? periodStart : from;
+      const clampedTo = to > periodEnd ? periodEnd : to;
+      const days = Math.max(0, Math.floor((clampedTo.getTime() - clampedFrom.getTime()) / (1000 * 60 * 60 * 24)) + 1);
 
       emp.total_days += days;
       emp.absences.push({
