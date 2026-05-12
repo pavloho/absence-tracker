@@ -18,6 +18,14 @@ export async function GET(req: NextRequest) {
   const result = [];
 
   for (const project of projects) {
+    const { rows: totalCountRows } = await sql`
+      SELECT COUNT(DISTINCT e.id)::int as total
+      FROM employee_projects ep
+      JOIN employees e ON ep.employee_id = e.id
+      WHERE ep.project_id = ${project.id}
+    `;
+    const totalEmployees = totalCountRows[0]?.total ?? 0;
+
     const { rows: absences } = await sql`
       SELECT a.*, e.first_name, e.last_name, e.avatar_url
       FROM absences a
@@ -87,6 +95,7 @@ export async function GET(req: NextRequest) {
       employees: Array.from(employeeMap.values()).sort((a, b) =>
         a.last_name.localeCompare(b.last_name) || a.first_name.localeCompare(b.first_name)
       ),
+      total_employees: totalEmployees,
       total_absentees: employeeMap.size,
     });
   }

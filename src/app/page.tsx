@@ -25,6 +25,7 @@ interface ProjectReport {
   project: { id: number; name: string; logo_url: string | null };
   period: { start: string; end: string; month: number; year: number; last_day: number };
   employees: Employee[];
+  total_employees: number;
   total_absentees: number;
 }
 
@@ -120,16 +121,13 @@ export default function ReportPage() {
                         <span className="text-base font-bold text-slate-900">{report.project.name}</span>
                       )}
                     </div>
-                    <div className="flex items-center gap-3 text-[12px]">
-                      <span className="text-slate-400">
-                        01–{report.period.last_day} {MONTHS[report.period.month]}
-                      </span>
+                    <div className="flex items-center gap-2 text-[12px]">
                       <div className="flex items-center gap-2">
                         <span className="bg-slate-100 text-slate-600 font-semibold px-2 py-0.5 rounded-md">
-                          {report.total_absentees} absent
+                          {report.total_absentees} of {report.total_employees} absent
                         </span>
                         <span className="bg-slate-100 text-slate-600 font-semibold px-2 py-0.5 rounded-md">
-                          {totalProjectDays} {totalProjectDays === 1 ? 'day' : 'days'}
+                          {totalProjectDays} {totalProjectDays === 1 ? 'day' : 'days'} total
                         </span>
                       </div>
                     </div>
