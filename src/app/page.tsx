@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Avatar } from '@/components/Avatar';
 import { AbsenceBadge } from '@/components/AbsenceBadge';
 import { MonthPicker } from '@/components/MonthPicker';
+import { IconCalendar } from '@tabler/icons-react';
 
 interface Absence {
   id: number;
@@ -54,13 +55,8 @@ export default function ReportPage() {
       <header className="bg-white border-b border-slate-100 sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round">
-                <rect x="3" y="4" width="18" height="18" rx="2" />
-                <line x1="16" y1="2" x2="16" y2="6" />
-                <line x1="8" y1="2" x2="8" y2="6" />
-                <line x1="3" y1="10" x2="21" y2="10" />
-              </svg>
+            <div className="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center text-white">
+              <IconCalendar size={18} />
             </div>
             <div>
               <h1 className="text-lg font-bold text-slate-900 tracking-tight">Absence Tracker</h1>

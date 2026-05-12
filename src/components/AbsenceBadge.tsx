@@ -1,19 +1,20 @@
 'use client';
 
 import { format } from 'date-fns';
+import { IconBeach, IconThermometer, IconPlane } from '@tabler/icons-react';
 
-const TYPE_STYLES: Record<string, { bg: string; emoji: string }> = {
+const TYPE_STYLES: Record<string, { bg: string; icon: React.ReactNode }> = {
   Holiday: {
     bg: 'bg-blue-50 text-blue-700 border border-blue-200',
-    emoji: '\u{1F3D6}',
+    icon: <IconBeach size={14} />,
   },
   'Sick Leave': {
     bg: 'bg-red-50 text-red-600 border border-red-200',
-    emoji: '\u{1F912}',
+    icon: <IconThermometer size={14} />,
   },
   Vacation: {
     bg: 'bg-amber-50 text-amber-700 border border-amber-200',
-    emoji: '✈️',
+    icon: <IconPlane size={14} />,
   },
 };
 
@@ -41,7 +42,7 @@ export function AbsenceBadge({
     <span
       className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${style.bg}`}
     >
-      <span>{style.emoji}</span>
+      {style.icon}
       <span>{type}</span>
       <span className="opacity-75">{dateText}</span>
     </span>

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Modal } from '@/components/Modal';
 import { Avatar } from '@/components/Avatar';
 import { AbsenceBadge } from '@/components/AbsenceBadge';
+import { IconPlus, IconCalendarPlus } from '@tabler/icons-react';
 
 interface Project { id: number; name: string; }
 interface Employee { id: number; first_name: string; last_name: string; avatar_url: string | null; projects: { id: number; name: string }[]; }
@@ -155,18 +156,14 @@ export default function AbsencesPage() {
             onClick={() => { setBulkProjectId(projectFilter || (projects[0]?.id ? String(projects[0].id) : '')); setBulkDate(''); setBulkType('Holiday'); setBulkModalOpen(true); }}
             className="border border-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-50 transition-colors flex items-center gap-2"
           >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M2 8h12M8 2v12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
+            <IconCalendarPlus size={16} />
             Add Holiday for All
           </button>
           <button
             onClick={openCreate}
             className="bg-slate-900 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-slate-800 transition-colors flex items-center gap-2"
           >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M8 3v10M3 8h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
+            <IconPlus size={16} />
             Add Absence
           </button>
         </div>

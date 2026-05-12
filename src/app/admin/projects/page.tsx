@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Modal } from '@/components/Modal';
+import { IconPlus, IconPencil, IconTrash } from '@tabler/icons-react';
 
 interface Project {
   id: number;
@@ -76,9 +77,7 @@ export default function ProjectsPage() {
           onClick={openCreate}
           className="bg-slate-900 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-slate-800 transition-colors flex items-center gap-2"
         >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M8 3v10M3 8h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
+          <IconPlus size={16} />
           Add Project
         </button>
       </div>
