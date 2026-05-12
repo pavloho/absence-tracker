@@ -106,9 +106,7 @@ export default function ReportPage() {
                   </div>
                   <div className="flex items-center gap-4 mt-1.5 text-sm text-slate-400">
                     <span>
-                      {String(report.period.month).padStart(2, '0')}.{report.period.year} &middot;{' '}
-                      01.{String(report.period.month).padStart(2, '0')} &ndash;{' '}
-                      {report.period.last_day}.{String(report.period.month).padStart(2, '0')}
+                      01 &ndash; {report.period.last_day} {monthNames[report.period.month]} {report.period.year}
                     </span>
                     <span className="flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
