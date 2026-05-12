@@ -93,13 +93,11 @@ export default function ReportPage() {
                 <div className="px-6 py-5 border-b border-slate-50">
                   <div className="flex items-center gap-3">
                     {report.project.logo_url ? (
-                      <div className="w-[100px] h-[28px] flex items-center">
-                        <img
-                          src={report.project.logo_url}
-                          alt={report.project.name}
-                          className="max-w-full max-h-full object-contain"
-                        />
-                      </div>
+                      <img
+                        src={report.project.logo_url}
+                        alt={report.project.name}
+                        className="h-[24px] w-auto object-contain"
+                      />
                     ) : (
                       <h2 className="text-xl font-bold text-slate-900">{report.project.name}</h2>
                     )}
