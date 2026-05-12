@@ -56,8 +56,8 @@ export async function GET(req: NextRequest) {
       if (!employeeMap.has(ab.employee_id)) {
         employeeMap.set(ab.employee_id, {
           id: ab.employee_id,
-          first_name: ab.first_name,
-          last_name: ab.last_name,
+          first_name: ab.first_name.trim(),
+          last_name: ab.last_name.trim(),
           avatar_url: ab.avatar_url,
           absences: [],
           total_days: 0,
@@ -98,7 +98,7 @@ export async function GET(req: NextRequest) {
         last_day: lastDay,
       },
       employees: Array.from(employeeMap.values()).sort((a, b) =>
-        a.last_name.localeCompare(b.last_name) || a.first_name.localeCompare(b.first_name)
+        a.last_name.trim().localeCompare(b.last_name.trim()) || a.first_name.trim().localeCompare(b.first_name.trim())
       ),
       total_employees: totalEmployees,
       total_absentees: employeeMap.size,
