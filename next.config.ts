@@ -6,6 +6,14 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: '**' },
     ],
   },
+  headers: async () => [
+    {
+      source: '/(.*)',
+      headers: [
+        { key: 'Referrer-Policy', value: 'no-referrer' },
+      ],
+    },
+  ],
 };
 
 export default nextConfig;

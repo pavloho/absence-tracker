@@ -2,7 +2,7 @@ import { sql } from '@/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
-  const token = req.nextUrl.searchParams.get('token');
+  const token = req.headers.get('authorization')?.replace('Bearer ', '');
   const expectedToken = process.env.REPORT_TOKEN;
 
   if (expectedToken && token !== expectedToken) {

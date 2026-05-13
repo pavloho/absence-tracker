@@ -49,7 +49,7 @@ export default function ReportPage() {
 
 function ReportContent() {
   const searchParams = useSearchParams();
-  const token = searchParams.get('token');
+  const [savedToken] = useState(() => searchParams.get('token'));
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [year, setYear] = useState(now.getFullYear());
@@ -59,16 +59,23 @@ function ReportContent() {
   const [activeProject, setActiveProject] = useState<number | null>(null);
 
   useEffect(() => {
+    if (savedToken) {
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, [savedToken]);
+
+  useEffect(() => {
     setLoading(true);
-    const tokenParam = token ? `&token=${token}` : '';
-    fetch(`/api/report?month=${month}&year=${year}${tokenParam}`)
+    const headers: Record<string, string> = {};
+    if (savedToken) headers['Authorization'] = `Bearer ${savedToken}`;
+    fetch(`/api/report?month=${month}&year=${year}`, { headers })
       .then((r) => {
         if (r.status === 403) { setDenied(true); setLoading(false); return null; }
         return r.json();
       })
       .then((d) => { if (d) { setData(d); setLoading(false); } })
       .catch(() => setLoading(false));
-  }, [month, year, token]);
+  }, [month, year, savedToken]);
 
   const prevMonth = () => {
     if (month === 1) { setMonth(12); setYear(year - 1); }
