@@ -3,6 +3,9 @@ import { requireAuth } from '@/lib/auth-guard';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET() {
+  const denied = await requireAuth();
+  if (denied) return denied;
+
   const { rows } = await sql`SELECT * FROM projects ORDER BY name`;
   return NextResponse.json(rows);
 }
@@ -12,6 +15,11 @@ export async function POST(req: NextRequest) {
   if (denied) return denied;
 
   const { name, logo_url } = await req.json();
+
+  if (!name?.trim()) {
+    return NextResponse.json({ error: 'Project name is required' }, { status: 400 });
+  }
+
   const { rows } = await sql`
     INSERT INTO projects (name, logo_url) VALUES (${name}, ${logo_url || null})
     RETURNING *

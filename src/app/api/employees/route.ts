@@ -3,6 +3,9 @@ import { requireAuth } from '@/lib/auth-guard';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
+  const denied = await requireAuth();
+  if (denied) return denied;
+
   const projectId = req.nextUrl.searchParams.get('project_id');
 
   if (projectId) {
@@ -38,6 +41,10 @@ export async function POST(req: NextRequest) {
   if (denied) return denied;
 
   const { first_name, last_name, avatar_url, project_ids } = await req.json();
+
+  if (!first_name?.trim() || !last_name?.trim()) {
+    return NextResponse.json({ error: 'first_name and last_name are required' }, { status: 400 });
+  }
 
   const { rows } = await sql`
     INSERT INTO employees (first_name, last_name, avatar_url)

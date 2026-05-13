@@ -10,6 +10,10 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   const numId = Number(id);
   const { first_name, last_name, avatar_url, project_ids } = await req.json();
 
+  if (!first_name?.trim() || !last_name?.trim()) {
+    return NextResponse.json({ error: 'first_name and last_name are required' }, { status: 400 });
+  }
+
   const { rows } = await sql`
     UPDATE employees SET first_name = ${first_name}, last_name = ${last_name}, avatar_url = ${avatar_url || null}
     WHERE id = ${numId} RETURNING *

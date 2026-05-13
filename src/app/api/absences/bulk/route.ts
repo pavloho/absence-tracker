@@ -8,6 +8,15 @@ export async function POST(req: NextRequest) {
 
   const { project_id, type, date_from, date_to } = await req.json();
 
+  if (!project_id || !type || !date_from) {
+    return NextResponse.json({ error: 'project_id, type, and date_from are required' }, { status: 400 });
+  }
+
+  const VALID_TYPES = ['Holiday', 'Sick Leave', 'Vacation'];
+  if (!VALID_TYPES.includes(type)) {
+    return NextResponse.json({ error: 'Invalid absence type' }, { status: 400 });
+  }
+
   const { rows: employees } = await sql`
     SELECT employee_id FROM employee_projects WHERE project_id = ${Number(project_id)}
   `;

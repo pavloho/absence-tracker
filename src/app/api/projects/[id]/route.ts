@@ -8,6 +8,11 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
   const { id } = await params;
   const { name, logo_url } = await req.json();
+
+  if (!name?.trim()) {
+    return NextResponse.json({ error: 'Project name is required' }, { status: 400 });
+  }
+
   const { rows } = await sql`
     UPDATE projects SET name = ${name}, logo_url = ${logo_url || null}
     WHERE id = ${Number(id)} RETURNING *

@@ -8,6 +8,16 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
   const { id } = await params;
   const { employee_id, project_id, type, date_from, date_to } = await req.json();
+
+  if (!employee_id || !project_id || !type || !date_from) {
+    return NextResponse.json({ error: 'employee_id, project_id, type, and date_from are required' }, { status: 400 });
+  }
+
+  const VALID_TYPES = ['Holiday', 'Sick Leave', 'Vacation'];
+  if (!VALID_TYPES.includes(type)) {
+    return NextResponse.json({ error: 'Invalid absence type' }, { status: 400 });
+  }
+
   const { rows } = await sql`
     UPDATE absences
     SET employee_id = ${employee_id}, project_id = ${project_id}, type = ${type},

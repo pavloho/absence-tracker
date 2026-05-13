@@ -3,6 +3,9 @@ import { requireAuth } from '@/lib/auth-guard';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
+  const denied = await requireAuth();
+  if (denied) return denied;
+
   const projectId = req.nextUrl.searchParams.get('project_id');
   const month = req.nextUrl.searchParams.get('month');
   const year = req.nextUrl.searchParams.get('year');
@@ -73,6 +76,16 @@ export async function POST(req: NextRequest) {
   if (denied) return denied;
 
   const { employee_id, project_id, type, date_from, date_to } = await req.json();
+
+  if (!employee_id || !project_id || !type || !date_from) {
+    return NextResponse.json({ error: 'employee_id, project_id, type, and date_from are required' }, { status: 400 });
+  }
+
+  const VALID_TYPES = ['Holiday', 'Sick Leave', 'Vacation'];
+  if (!VALID_TYPES.includes(type)) {
+    return NextResponse.json({ error: 'Invalid absence type' }, { status: 400 });
+  }
+
   const { rows } = await sql`
     INSERT INTO absences (employee_id, project_id, type, date_from, date_to)
     VALUES (${employee_id}, ${project_id}, ${type}, ${date_from}, ${date_to || null})
