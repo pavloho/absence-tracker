@@ -2,6 +2,13 @@ import { sql } from '@/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
+  const token = req.nextUrl.searchParams.get('token');
+  const expectedToken = process.env.REPORT_TOKEN;
+
+  if (expectedToken && token !== expectedToken) {
+    return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+  }
+
   const month = req.nextUrl.searchParams.get('month');
   const year = req.nextUrl.searchParams.get('year');
 

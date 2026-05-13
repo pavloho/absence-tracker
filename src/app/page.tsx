@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Avatar } from '@/components/Avatar';
 import { AbsenceBadge } from '@/components/AbsenceBadge';
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
@@ -35,20 +36,27 @@ const MONTHS = [
 ];
 
 export default function ReportPage() {
+  const searchParams = useSearchParams();
+  const token = searchParams.get('token');
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [year, setYear] = useState(now.getFullYear());
   const [data, setData] = useState<ProjectReport[]>([]);
   const [loading, setLoading] = useState(true);
+  const [denied, setDenied] = useState(false);
   const [activeProject, setActiveProject] = useState<number | null>(null);
 
   useEffect(() => {
     setLoading(true);
-    fetch(`/api/report?month=${month}&year=${year}`)
-      .then((r) => r.json())
-      .then((d) => { setData(d); setLoading(false); })
+    const tokenParam = token ? `&token=${token}` : '';
+    fetch(`/api/report?month=${month}&year=${year}${tokenParam}`)
+      .then((r) => {
+        if (r.status === 403) { setDenied(true); setLoading(false); return null; }
+        return r.json();
+      })
+      .then((d) => { if (d) { setData(d); setLoading(false); } })
       .catch(() => setLoading(false));
-  }, [month, year]);
+  }, [month, year, token]);
 
   const prevMonth = () => {
     if (month === 1) { setMonth(12); setYear(year - 1); }
@@ -105,7 +113,12 @@ export default function ReportPage() {
       </header>
 
       <main className="max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-8">
-        {loading ? (
+        {denied ? (
+          <div className="text-center py-32 text-slate-400">
+            <p className="text-base font-medium">Access denied</p>
+            <p className="text-sm mt-1">This report requires a valid access link.</p>
+          </div>
+        ) : loading ? (
           <div className="flex items-center justify-center py-32">
             <div className="w-5 h-5 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin" />
           </div>
