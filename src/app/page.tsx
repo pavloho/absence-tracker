@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Avatar } from '@/components/Avatar';
 import { AbsenceBadge } from '@/components/AbsenceBadge';
@@ -36,6 +36,18 @@ const MONTHS = [
 ];
 
 export default function ReportPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#f5f6f8] flex items-center justify-center">
+        <div className="w-5 h-5 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin" />
+      </div>
+    }>
+      <ReportContent />
+    </Suspense>
+  );
+}
+
+function ReportContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
   const now = new Date();
