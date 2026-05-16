@@ -1,12 +1,12 @@
 'use client';
 
 import { format } from 'date-fns';
-import { IconBeach, IconThermometer, IconPlane } from '@tabler/icons-react';
+import { IconConfetti, IconThermometer, IconPlane } from '@tabler/icons-react';
 
 const TYPE_STYLES: Record<string, { bg: string; icon: React.ReactNode }> = {
   Holiday: {
     bg: 'bg-blue-50 text-blue-700 border border-blue-200',
-    icon: <IconBeach size={14} />,
+    icon: <IconConfetti size={14} />,
   },
   'Sick Leave': {
     bg: 'bg-red-50 text-red-600 border border-red-200',
