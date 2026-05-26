@@ -80,7 +80,16 @@ export async function GET(req: NextRequest) {
       const periodEnd = toUTC(endDate);
       const clampedFrom = from < periodStart ? periodStart : from;
       const clampedTo = to > periodEnd ? periodEnd : to;
-      const days = Math.max(0, Math.floor((clampedTo.getTime() - clampedFrom.getTime()) / (1000 * 60 * 60 * 24)) + 1);
+
+      let days = 0;
+      const cursor = new Date(clampedFrom);
+      while (cursor <= clampedTo) {
+        const dayOfWeek = cursor.getUTCDay();
+        if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+          days++;
+        }
+        cursor.setUTCDate(cursor.getUTCDate() + 1);
+      }
 
       emp.total_days += days;
       emp.absences.push({
