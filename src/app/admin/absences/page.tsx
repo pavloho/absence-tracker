@@ -255,53 +255,77 @@ export default function AbsencesPage() {
         <div className="bg-white rounded-2xl border border-slate-100 p-12 text-center">
           <p className="text-slate-400">No absences for {MONTHS[month - 1]} {year}.</p>
         </div>
-      ) : (
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-slate-100">
-                <th className="text-left text-xs font-semibold text-slate-400 uppercase tracking-wider px-6 py-3">Employee</th>
-                <th className="text-left text-xs font-semibold text-slate-400 uppercase tracking-wider px-4 py-3">Project</th>
-                <th className="text-left text-xs font-semibold text-slate-400 uppercase tracking-wider px-4 py-3">Type</th>
-                <th className="text-left text-xs font-semibold text-slate-400 uppercase tracking-wider px-4 py-3">Dates</th>
-                <th className="text-right text-xs font-semibold text-slate-400 uppercase tracking-wider px-6 py-3">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {absences.map((ab, i) => (
-                <tr key={ab.id} className={`border-b border-slate-50 last:border-0 ${i % 2 === 1 ? 'bg-slate-50/30' : ''}`}>
-                  <td className="px-6 py-3">
-                    <div className="flex items-center gap-3">
-                      <Avatar firstName={ab.first_name} lastName={ab.last_name} avatarUrl={ab.avatar_url} size={32} />
-                      <span className="text-sm font-medium text-slate-800">{ab.first_name} {ab.last_name}</span>
+      ) : (() => {
+        const grouped = new Map<string, { employee: { id: number; first_name: string; last_name: string; avatar_url: string | null }; project: string; absences: Absence[] }>();
+        absences.forEach((ab) => {
+          const key = `${ab.employee_id}-${ab.project_id}`;
+          if (!grouped.has(key)) {
+            grouped.set(key, {
+              employee: { id: ab.employee_id, first_name: ab.first_name, last_name: ab.last_name, avatar_url: ab.avatar_url },
+              project: ab.project_name,
+              absences: [],
+            });
+          }
+          grouped.get(key)!.absences.push(ab);
+        });
+        const groups = Array.from(grouped.values());
+
+        return (
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+            <div className="grid grid-cols-[1fr_auto] border-b border-slate-100">
+              <div className="flex px-6 py-3 gap-4">
+                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider w-[200px] shrink-0">Employee</span>
+                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Absences</span>
+              </div>
+              <div className="px-6 py-3">
+                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Actions</span>
+              </div>
+            </div>
+
+            <div className="divide-y divide-slate-50">
+              {groups.map((group, i) => (
+                <div key={`${group.employee.id}-${group.project}`} className={`px-6 py-4 ${i % 2 === 1 ? 'bg-slate-50/30' : ''}`}>
+                  <div className="flex items-start gap-4">
+                    <div className="flex items-center gap-3 w-[200px] shrink-0">
+                      <Avatar firstName={group.employee.first_name} lastName={group.employee.last_name} avatarUrl={group.employee.avatar_url} size={36} />
+                      <div className="min-w-0">
+                        <div className="text-sm font-semibold text-slate-800 truncate">
+                          {group.employee.first_name} {group.employee.last_name}
+                        </div>
+                        <div className="text-xs text-slate-400">{group.project}</div>
+                      </div>
                     </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="text-sm text-slate-600">{ab.project_name}</span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <AbsenceBadge type={ab.type} dateFrom={ab.date_from} dateTo={ab.date_to} />
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="text-sm text-slate-500">
-                      {ab.date_from.split('T')[0]}
-                      {ab.date_to && ` — ${ab.date_to.split('T')[0]}`}
-                    </span>
-                  </td>
-                  <td className="px-6 py-3 text-right">
-                    <button onClick={() => openEdit(ab)} className="text-xs font-medium text-slate-400 hover:text-slate-700 transition-colors px-2 py-1 rounded-lg hover:bg-slate-50">
-                      Edit
-                    </button>
-                    <button onClick={() => handleDelete(ab.id)} className="text-xs font-medium text-slate-400 hover:text-red-500 transition-colors px-2 py-1 rounded-lg hover:bg-red-50">
-                      Delete
-                    </button>
-                  </td>
-                </tr>
+
+                    <div className="flex-1 flex flex-col gap-2">
+                      {group.absences.map((ab) => (
+                        <div key={ab.id} className="flex items-center gap-2 group">
+                          <AbsenceBadge type={ab.type} dateFrom={ab.date_from} dateTo={ab.date_to} />
+                          <span className="text-xs text-slate-400">
+                            {ab.date_from.split('T')[0]}
+                            {ab.date_to && ` — ${ab.date_to.split('T')[0]}`}
+                          </span>
+                          <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 ml-auto">
+                            <button onClick={() => openEdit(ab)} className="text-xs font-medium text-slate-400 hover:text-slate-700 transition-colors px-2 py-1 rounded-lg hover:bg-slate-100">
+                              Edit
+                            </button>
+                            <button onClick={() => handleDelete(ab.id)} className="text-xs font-medium text-slate-400 hover:text-red-500 transition-colors px-2 py-1 rounded-lg hover:bg-red-50">
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+            </div>
+
+            <div className="px-6 py-3 border-t border-slate-100 bg-slate-50/50">
+              <span className="text-xs text-slate-400">{absences.length} absence{absences.length !== 1 ? 's' : ''} · {groups.length} employee{groups.length !== 1 ? 's' : ''}</span>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Add/Edit Modal */}
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editing ? 'Edit Absence' : 'Add Absence'}>
