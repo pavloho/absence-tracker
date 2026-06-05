@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Modal } from '@/components/Modal';
 import { Avatar } from '@/components/Avatar';
 import { AbsenceBadge } from '@/components/AbsenceBadge';
-import { IconPlus, IconCalendarPlus } from '@tabler/icons-react';
+import { IconPlus, IconCalendarPlus, IconPencil, IconTrash } from '@tabler/icons-react';
 
 interface Project { id: number; name: string; }
 interface Employee { id: number; first_name: string; last_name: string; avatar_url: string | null; projects: { id: number; name: string }[]; }
@@ -246,82 +246,157 @@ export default function AbsencesPage() {
         </select>
       </div>
 
-      {/* Table */}
+      {/* Calendar */}
       {loading ? (
         <div className="flex justify-center py-20">
           <div className="w-8 h-8 border-2 border-slate-200 border-t-slate-900 rounded-full animate-spin" />
         </div>
-      ) : absences.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-slate-100 p-12 text-center">
-          <p className="text-slate-400">No absences for {MONTHS[month - 1]} {year}.</p>
-        </div>
       ) : (() => {
-        const grouped = new Map<string, { employee: { id: number; first_name: string; last_name: string; avatar_url: string | null }; project: string; absences: Absence[] }>();
+        const daysInMonth = new Date(year, month, 0).getDate();
+        const firstDayOfWeek = (new Date(year, month - 1, 1).getDay() + 6) % 7; // Monday = 0
+        const DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+        const TYPE_COLORS: Record<string, { bg: string; dot: string }> = {
+          Holiday: { bg: 'bg-blue-50 border-blue-200', dot: 'bg-blue-500' },
+          'Sick Leave': { bg: 'bg-red-50 border-red-200', dot: 'bg-red-500' },
+          Vacation: { bg: 'bg-emerald-50 border-emerald-200', dot: 'bg-emerald-500' },
+        };
+
+        // Build a map: day number -> array of absences on that day
+        const dayMap = new Map<number, Absence[]>();
         absences.forEach((ab) => {
-          const key = `${ab.employee_id}-${ab.project_id}`;
-          if (!grouped.has(key)) {
-            grouped.set(key, {
-              employee: { id: ab.employee_id, first_name: ab.first_name, last_name: ab.last_name, avatar_url: ab.avatar_url },
-              project: ab.project_name,
-              absences: [],
-            });
+          const from = new Date(ab.date_from.split('T')[0] + 'T00:00:00');
+          const to = ab.date_to ? new Date(ab.date_to.split('T')[0] + 'T00:00:00') : from;
+          const cursor = new Date(from);
+          while (cursor <= to) {
+            if (cursor.getMonth() + 1 === month && cursor.getFullYear() === year) {
+              const day = cursor.getDate();
+              if (!dayMap.has(day)) dayMap.set(day, []);
+              dayMap.get(day)!.push(ab);
+            }
+            cursor.setDate(cursor.getDate() + 1);
           }
-          grouped.get(key)!.absences.push(ab);
         });
-        const groups = Array.from(grouped.values());
 
-        return (
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-            <div className="grid grid-cols-[1fr_auto] border-b border-slate-100">
-              <div className="flex px-6 py-3 gap-4">
-                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider w-[200px] shrink-0">Employee</span>
-                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Absences</span>
+        const today = new Date();
+        const isCurrentMonth = today.getMonth() + 1 === month && today.getFullYear() === year;
+        const todayDate = today.getDate();
+
+        const cells = [];
+        // Empty cells before first day
+        for (let i = 0; i < firstDayOfWeek; i++) {
+          cells.push(<div key={`empty-${i}`} className="min-h-[100px] bg-slate-50/50" />);
+        }
+        // Day cells
+        for (let day = 1; day <= daysInMonth; day++) {
+          const dayOfWeek = (firstDayOfWeek + day - 1) % 7;
+          const isWeekend = dayOfWeek >= 5;
+          const isToday = isCurrentMonth && day === todayDate;
+          const dayAbsences = dayMap.get(day) || [];
+          // Deduplicate by employee (same employee might appear from overlapping ranges)
+          const seen = new Set<number>();
+          const uniqueAbsences = dayAbsences.filter((ab) => {
+            if (seen.has(ab.employee_id)) return false;
+            seen.add(ab.employee_id);
+            return true;
+          });
+
+          cells.push(
+            <div
+              key={day}
+              className={`min-h-[100px] border-t border-slate-100 p-1.5 transition-colors ${
+                isWeekend ? 'bg-slate-50/70' : 'bg-white'
+              } ${isToday ? 'ring-2 ring-inset ring-slate-900' : ''}`}
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className={`text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full ${
+                  isToday ? 'bg-slate-900 text-white' : isWeekend ? 'text-slate-400' : 'text-slate-600'
+                }`}>
+                  {day}
+                </span>
+                {uniqueAbsences.length > 0 && (
+                  <span className="text-[10px] font-semibold text-slate-400">{uniqueAbsences.length}</span>
+                )}
               </div>
-              <div className="px-6 py-3">
-                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Actions</span>
-              </div>
-            </div>
-
-            <div className="divide-y divide-slate-50">
-              {groups.map((group, i) => (
-                <div key={`${group.employee.id}-${group.project}`} className={`px-6 py-4 ${i % 2 === 1 ? 'bg-slate-50/30' : ''}`}>
-                  <div className="flex items-start gap-4">
-                    <div className="flex items-center gap-3 w-[200px] shrink-0">
-                      <Avatar firstName={group.employee.first_name} lastName={group.employee.last_name} avatarUrl={group.employee.avatar_url} size={36} />
-                      <div className="min-w-0">
-                        <div className="text-sm font-semibold text-slate-800 truncate">
-                          {group.employee.first_name} {group.employee.last_name}
-                        </div>
-                        <div className="text-xs text-slate-400">{group.project}</div>
-                      </div>
-                    </div>
-
-                    <div className="flex-1 flex flex-col gap-2">
-                      {group.absences.map((ab) => (
-                        <div key={ab.id} className="flex items-center gap-2 group">
-                          <AbsenceBadge type={ab.type} dateFrom={ab.date_from} dateTo={ab.date_to} />
-                          <span className="text-xs text-slate-400">
-                            {ab.date_from.split('T')[0]}
-                            {ab.date_to && ` — ${ab.date_to.split('T')[0]}`}
-                          </span>
-                          <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 ml-auto">
-                            <button onClick={() => openEdit(ab)} className="text-xs font-medium text-slate-400 hover:text-slate-700 transition-colors px-2 py-1 rounded-lg hover:bg-slate-100">
-                              Edit
+              <div className="space-y-0.5">
+                {uniqueAbsences.slice(0, 3).map((ab) => {
+                  const colors = TYPE_COLORS[ab.type] || TYPE_COLORS.Holiday;
+                  return (
+                    <div
+                      key={`${ab.id}-${day}`}
+                      className={`group relative flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[11px] border cursor-pointer ${colors.bg} hover:shadow-sm transition-shadow`}
+                    >
+                      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${colors.dot}`} />
+                      <span className="truncate font-medium text-slate-700">
+                        {ab.last_name}
+                      </span>
+                      {/* Hover tooltip with actions */}
+                      <div className="absolute left-0 top-full mt-1 z-20 hidden group-hover:block">
+                        <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-3 min-w-[200px]">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Avatar firstName={ab.first_name} lastName={ab.last_name} avatarUrl={ab.avatar_url} size={28} />
+                            <div>
+                              <div className="text-xs font-semibold text-slate-800">{ab.first_name} {ab.last_name}</div>
+                              <div className="text-[10px] text-slate-400">{ab.project_name}</div>
+                            </div>
+                          </div>
+                          <div className="mb-2">
+                            <AbsenceBadge type={ab.type} dateFrom={ab.date_from} dateTo={ab.date_to} />
+                          </div>
+                          <div className="flex gap-1 border-t border-slate-100 pt-2">
+                            <button
+                              onClick={(e) => { e.stopPropagation(); openEdit(ab); }}
+                              className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-800 px-2 py-1 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer"
+                            >
+                              <IconPencil size={12} /> Edit
                             </button>
-                            <button onClick={() => handleDelete(ab.id)} className="text-xs font-medium text-slate-400 hover:text-red-500 transition-colors px-2 py-1 rounded-lg hover:bg-red-50">
-                              Delete
+                            <button
+                              onClick={(e) => { e.stopPropagation(); handleDelete(ab.id); }}
+                              className="flex items-center gap-1 text-xs text-slate-500 hover:text-red-600 px-2 py-1 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
+                            >
+                              <IconTrash size={12} /> Delete
                             </button>
                           </div>
                         </div>
-                      ))}
+                      </div>
                     </div>
+                  );
+                })}
+                {uniqueAbsences.length > 3 && (
+                  <div className="text-[10px] text-slate-400 font-medium px-1.5">
+                    +{uniqueAbsences.length - 3} more
                   </div>
+                )}
+              </div>
+            </div>
+          );
+        }
+
+        return (
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+            {/* Day names header */}
+            <div className="grid grid-cols-7 border-b border-slate-100">
+              {DAY_NAMES.map((name, i) => (
+                <div key={name} className={`py-2.5 text-center text-xs font-semibold uppercase tracking-wider ${
+                  i >= 5 ? 'text-slate-300' : 'text-slate-400'
+                }`}>
+                  {name}
                 </div>
               ))}
             </div>
-
-            <div className="px-6 py-3 border-t border-slate-100 bg-slate-50/50">
-              <span className="text-xs text-slate-400">{absences.length} absence{absences.length !== 1 ? 's' : ''} · {groups.length} employee{groups.length !== 1 ? 's' : ''}</span>
+            {/* Calendar grid */}
+            <div className="grid grid-cols-7">
+              {cells}
+            </div>
+            {/* Legend */}
+            <div className="px-4 py-3 border-t border-slate-100 bg-slate-50/50 flex items-center gap-4">
+              {Object.entries(TYPE_COLORS).map(([type, colors]) => (
+                <div key={type} className="flex items-center gap-1.5">
+                  <span className={`w-2 h-2 rounded-full ${colors.dot}`} />
+                  <span className="text-xs text-slate-500">{type}</span>
+                </div>
+              ))}
+              <span className="text-xs text-slate-400 ml-auto">{absences.length} absence{absences.length !== 1 ? 's' : ''}</span>
             </div>
           </div>
         );
