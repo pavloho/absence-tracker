@@ -307,6 +307,24 @@ export default function AbsencesPage() {
           return dow === 0 || dow === 6;
         };
 
+        const CELL_W = 32;
+        const ROW_H = 44;
+
+        // Merge consecutive same-absence days into segments per row
+        const rowSegments = rows.map((row) => {
+          const segments: { startDay: number; endDay: number; ab: Absence }[] = [];
+          let d = 1;
+          while (d <= daysInMonth) {
+            const ab = row.dayAbsence.get(d);
+            if (!ab) { d++; continue; }
+            let end = d;
+            while (end + 1 <= daysInMonth && row.dayAbsence.get(end + 1)?.id === ab.id) end++;
+            segments.push({ startDay: d, endDay: end, ab });
+            d = end + 1;
+          }
+          return { row, segments };
+        });
+
         return (
           <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
@@ -322,9 +340,10 @@ export default function AbsencesPage() {
                     return (
                       <div
                         key={day}
-                        className={`w-8 shrink-0 py-2 text-center text-[11px] font-semibold ${
+                        className={`shrink-0 py-2 text-center text-[11px] font-semibold ${
                           weekend ? 'bg-slate-50 text-slate-300' : 'text-slate-400'
                         }`}
+                        style={{ width: CELL_W }}
                       >
                         <span className={isToday ? 'inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-900 text-white' : ''}>
                           {day}
@@ -335,50 +354,58 @@ export default function AbsencesPage() {
                 </div>
 
                 {/* Employee rows */}
-                {rows.map((row, ri) => (
+                {rowSegments.map(({ row, segments }, ri) => (
                   <div key={row.key} className={`flex border-b border-slate-50 last:border-0 ${ri % 2 === 1 ? 'bg-slate-50/30' : ''}`}>
-                    <div className={`w-[200px] shrink-0 px-4 py-2 flex items-center gap-2 sticky left-0 border-r border-slate-100 ${ri % 2 === 1 ? 'bg-slate-50' : 'bg-white'}`}>
+                    <div className={`w-[200px] shrink-0 px-4 flex items-center gap-2 sticky left-0 border-r border-slate-100 ${ri % 2 === 1 ? 'bg-slate-50' : 'bg-white'}`} style={{ height: ROW_H }}>
                       <Avatar firstName={row.employee.first_name} lastName={row.employee.last_name} avatarUrl={row.employee.avatar_url} size={28} />
                       <div className="min-w-0">
                         <div className="text-xs font-semibold text-slate-800 truncate">{row.employee.last_name} {row.employee.first_name}</div>
                         <div className="text-[10px] text-slate-400 truncate">{row.project}</div>
                       </div>
                     </div>
-                    {days.map((day) => {
-                      const weekend = isWeekend(day);
-                      const ab = row.dayAbsence.get(day);
-                      const colors = ab ? (TYPE_COLORS[ab.type] || TYPE_COLORS.Holiday) : null;
-                      return (
-                        <div
-                          key={day}
-                          className={`w-8 shrink-0 flex items-center justify-center py-2 ${weekend ? 'bg-slate-50/60' : ''}`}
-                        >
-                          {ab && colors && (
-                            <div
-                              onClick={() => openEdit(ab)}
-                              title={`${ab.first_name} ${ab.last_name} · ${ab.type}`}
-                              className={`group relative w-6 h-6 rounded-md ${colors.cell} flex items-center justify-center cursor-pointer hover:ring-2 hover:ring-offset-1 hover:ring-slate-300 transition-all`}
-                            >
-                              {colors.icon}
-                              <div className="absolute left-1/2 -translate-x-1/2 top-full mt-1 z-20 hidden group-hover:block">
-                                <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-2.5 min-w-[180px]">
-                                  <div className="text-xs font-semibold text-slate-800 mb-1">{ab.first_name} {ab.last_name}</div>
-                                  <div className="mb-2"><AbsenceBadge type={ab.type} dateFrom={ab.date_from} dateTo={ab.date_to} /></div>
-                                  <div className="flex gap-1 border-t border-slate-100 pt-1.5">
-                                    <button onClick={(e) => { e.stopPropagation(); openEdit(ab); }} className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-800 px-2 py-1 rounded-lg hover:bg-slate-50 cursor-pointer">
-                                      <IconPencil size={12} /> Edit
-                                    </button>
-                                    <button onClick={(e) => { e.stopPropagation(); handleDelete(ab.id); }} className="flex items-center gap-1 text-xs text-slate-500 hover:text-red-600 px-2 py-1 rounded-lg hover:bg-red-50 cursor-pointer">
-                                      <IconTrash size={12} /> Delete
-                                    </button>
-                                  </div>
+                    <div className="relative shrink-0" style={{ width: daysInMonth * CELL_W, height: ROW_H }}>
+                      {/* Weekend background */}
+                      <div className="absolute inset-0 flex">
+                        {days.map((day) => (
+                          <div key={day} className={`shrink-0 ${isWeekend(day) ? 'bg-slate-50/60' : ''}`} style={{ width: CELL_W }} />
+                        ))}
+                      </div>
+                      {/* Absence bars */}
+                      {segments.map((seg) => {
+                        const colors = TYPE_COLORS[seg.ab.type] || TYPE_COLORS.Holiday;
+                        const span = seg.endDay - seg.startDay + 1;
+                        const left = (seg.startDay - 1) * CELL_W + 3;
+                        const width = span * CELL_W - 6;
+                        return (
+                          <div
+                            key={`${seg.ab.id}-${seg.startDay}`}
+                            onClick={() => openEdit(seg.ab)}
+                            title={`${seg.ab.first_name} ${seg.ab.last_name} · ${seg.ab.type}`}
+                            className={`group absolute top-1/2 -translate-y-1/2 h-7 rounded-md ${colors.cell} flex items-center gap-1 px-1.5 cursor-pointer hover:ring-2 hover:ring-offset-1 hover:ring-slate-300 transition-all overflow-hidden`}
+                            style={{ left, width }}
+                          >
+                            <span className="shrink-0">{colors.icon}</span>
+                            {span > 1 && (
+                              <span className="text-[11px] font-bold text-white whitespace-nowrap">{span} days</span>
+                            )}
+                            <div className="absolute left-0 top-full mt-1 z-20 hidden group-hover:block">
+                              <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-2.5 min-w-[180px]">
+                                <div className="text-xs font-semibold text-slate-800 mb-1">{seg.ab.first_name} {seg.ab.last_name}</div>
+                                <div className="mb-2"><AbsenceBadge type={seg.ab.type} dateFrom={seg.ab.date_from} dateTo={seg.ab.date_to} /></div>
+                                <div className="flex gap-1 border-t border-slate-100 pt-1.5">
+                                  <button onClick={(e) => { e.stopPropagation(); openEdit(seg.ab); }} className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-800 px-2 py-1 rounded-lg hover:bg-slate-50 cursor-pointer">
+                                    <IconPencil size={12} /> Edit
+                                  </button>
+                                  <button onClick={(e) => { e.stopPropagation(); handleDelete(seg.ab.id); }} className="flex items-center gap-1 text-xs text-slate-500 hover:text-red-600 px-2 py-1 rounded-lg hover:bg-red-50 cursor-pointer">
+                                    <IconTrash size={12} /> Delete
+                                  </button>
                                 </div>
                               </div>
                             </div>
-                          )}
-                        </div>
-                      );
-                    })}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 ))}
               </div>
