@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Modal } from '@/components/Modal';
 import { Avatar } from '@/components/Avatar';
 import { AbsenceBadge } from '@/components/AbsenceBadge';
-import { IconPlus, IconCalendarPlus, IconPencil, IconTrash } from '@tabler/icons-react';
+import { IconPlus, IconCalendarPlus, IconPencil, IconTrash, IconConfetti, IconThermometer, IconPlane } from '@tabler/icons-react';
 
 interface Project { id: number; name: string; }
 interface Employee { id: number; first_name: string; last_name: string; avatar_url: string | null; projects: { id: number; name: string }[]; }
@@ -259,10 +259,10 @@ export default function AbsencesPage() {
         const daysInMonth = new Date(year, month, 0).getDate();
         const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
-        const TYPE_COLORS: Record<string, { cell: string; dot: string }> = {
-          Holiday: { cell: 'bg-blue-500', dot: 'bg-blue-500' },
-          'Sick Leave': { cell: 'bg-red-500', dot: 'bg-red-500' },
-          Vacation: { cell: 'bg-emerald-500', dot: 'bg-emerald-500' },
+        const TYPE_COLORS: Record<string, { cell: string; dot: string; icon: React.ReactNode; legendIcon: React.ReactNode }> = {
+          Holiday: { cell: 'bg-blue-500', dot: 'bg-blue-500', icon: <IconConfetti size={13} className="text-white" />, legendIcon: <IconConfetti size={14} className="text-blue-500" /> },
+          'Sick Leave': { cell: 'bg-red-500', dot: 'bg-red-500', icon: <IconThermometer size={13} className="text-white" />, legendIcon: <IconThermometer size={14} className="text-red-500" /> },
+          Vacation: { cell: 'bg-emerald-500', dot: 'bg-emerald-500', icon: <IconPlane size={13} className="text-white" />, legendIcon: <IconPlane size={14} className="text-emerald-500" /> },
         };
 
         const today = new Date();
@@ -357,8 +357,9 @@ export default function AbsencesPage() {
                             <div
                               onClick={() => openEdit(ab)}
                               title={`${ab.first_name} ${ab.last_name} · ${ab.type}`}
-                              className={`group relative w-5 h-5 rounded-md ${colors.cell} cursor-pointer hover:ring-2 hover:ring-offset-1 hover:ring-slate-300 transition-all`}
+                              className={`group relative w-6 h-6 rounded-md ${colors.cell} flex items-center justify-center cursor-pointer hover:ring-2 hover:ring-offset-1 hover:ring-slate-300 transition-all`}
                             >
+                              {colors.icon}
                               <div className="absolute left-1/2 -translate-x-1/2 top-full mt-1 z-20 hidden group-hover:block">
                                 <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-2.5 min-w-[180px]">
                                   <div className="text-xs font-semibold text-slate-800 mb-1">{ab.first_name} {ab.last_name}</div>
@@ -387,7 +388,7 @@ export default function AbsencesPage() {
             <div className="px-4 py-3 border-t border-slate-100 bg-slate-50/50 flex items-center gap-4">
               {Object.entries(TYPE_COLORS).map(([type, colors]) => (
                 <div key={type} className="flex items-center gap-1.5">
-                  <span className={`w-2.5 h-2.5 rounded ${colors.dot}`} />
+                  {colors.legendIcon}
                   <span className="text-xs text-slate-500">{type}</span>
                 </div>
               ))}
