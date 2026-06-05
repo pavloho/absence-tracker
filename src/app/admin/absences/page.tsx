@@ -246,157 +246,152 @@ export default function AbsencesPage() {
         </select>
       </div>
 
-      {/* Calendar */}
+      {/* Timeline */}
       {loading ? (
         <div className="flex justify-center py-20">
           <div className="w-8 h-8 border-2 border-slate-200 border-t-slate-900 rounded-full animate-spin" />
         </div>
+      ) : absences.length === 0 ? (
+        <div className="bg-white rounded-2xl border border-slate-100 p-12 text-center">
+          <p className="text-slate-400">No absences for {MONTHS[month - 1]} {year}.</p>
+        </div>
       ) : (() => {
         const daysInMonth = new Date(year, month, 0).getDate();
-        const firstDayOfWeek = (new Date(year, month - 1, 1).getDay() + 6) % 7; // Monday = 0
-        const DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
-        const TYPE_COLORS: Record<string, { bg: string; dot: string }> = {
-          Holiday: { bg: 'bg-blue-50 border-blue-200', dot: 'bg-blue-500' },
-          'Sick Leave': { bg: 'bg-red-50 border-red-200', dot: 'bg-red-500' },
-          Vacation: { bg: 'bg-emerald-50 border-emerald-200', dot: 'bg-emerald-500' },
+        const TYPE_COLORS: Record<string, { cell: string; dot: string }> = {
+          Holiday: { cell: 'bg-blue-500', dot: 'bg-blue-500' },
+          'Sick Leave': { cell: 'bg-red-500', dot: 'bg-red-500' },
+          Vacation: { cell: 'bg-emerald-500', dot: 'bg-emerald-500' },
         };
-
-        // Build a map: day number -> array of absences on that day
-        const dayMap = new Map<number, Absence[]>();
-        absences.forEach((ab) => {
-          const from = new Date(ab.date_from.split('T')[0] + 'T00:00:00');
-          const to = ab.date_to ? new Date(ab.date_to.split('T')[0] + 'T00:00:00') : from;
-          const cursor = new Date(from);
-          while (cursor <= to) {
-            if (cursor.getMonth() + 1 === month && cursor.getFullYear() === year) {
-              const day = cursor.getDate();
-              if (!dayMap.has(day)) dayMap.set(day, []);
-              dayMap.get(day)!.push(ab);
-            }
-            cursor.setDate(cursor.getDate() + 1);
-          }
-        });
 
         const today = new Date();
         const isCurrentMonth = today.getMonth() + 1 === month && today.getFullYear() === year;
         const todayDate = today.getDate();
 
-        const cells = [];
-        // Empty cells before first day
-        for (let i = 0; i < firstDayOfWeek; i++) {
-          cells.push(<div key={`empty-${i}`} className="min-h-[100px] bg-slate-50/50" />);
-        }
-        // Day cells
-        for (let day = 1; day <= daysInMonth; day++) {
-          const dayOfWeek = (firstDayOfWeek + day - 1) % 7;
-          const isWeekend = dayOfWeek >= 5;
-          const isToday = isCurrentMonth && day === todayDate;
-          const dayAbsences = dayMap.get(day) || [];
-          // Deduplicate by employee (same employee might appear from overlapping ranges)
-          const seen = new Set<number>();
-          const uniqueAbsences = dayAbsences.filter((ab) => {
-            if (seen.has(ab.employee_id)) return false;
-            seen.add(ab.employee_id);
-            return true;
-          });
+        // Group absences by employee+project, build per-day map for each
+        type Row = {
+          key: string;
+          employee: { id: number; first_name: string; last_name: string; avatar_url: string | null };
+          project: string;
+          dayAbsence: Map<number, Absence>;
+        };
+        const rowMap = new Map<string, Row>();
+        absences.forEach((ab) => {
+          const key = `${ab.employee_id}-${ab.project_id}`;
+          if (!rowMap.has(key)) {
+            rowMap.set(key, {
+              key,
+              employee: { id: ab.employee_id, first_name: ab.first_name, last_name: ab.last_name, avatar_url: ab.avatar_url },
+              project: ab.project_name,
+              dayAbsence: new Map(),
+            });
+          }
+          const row = rowMap.get(key)!;
+          const from = new Date(ab.date_from.split('T')[0] + 'T00:00:00');
+          const to = ab.date_to ? new Date(ab.date_to.split('T')[0] + 'T00:00:00') : from;
+          const cursor = new Date(from);
+          while (cursor <= to) {
+            if (cursor.getMonth() + 1 === month && cursor.getFullYear() === year) {
+              row.dayAbsence.set(cursor.getDate(), ab);
+            }
+            cursor.setDate(cursor.getDate() + 1);
+          }
+        });
+        const rows = Array.from(rowMap.values()).sort((a, b) =>
+          a.employee.last_name.trim().localeCompare(b.employee.last_name.trim())
+        );
 
-          cells.push(
-            <div
-              key={day}
-              className={`min-h-[100px] border-t border-slate-100 p-1.5 transition-colors ${
-                isWeekend ? 'bg-slate-50/70' : 'bg-white'
-              } ${isToday ? 'ring-2 ring-inset ring-slate-900' : ''}`}
-            >
-              <div className="flex items-center justify-between mb-1">
-                <span className={`text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full ${
-                  isToday ? 'bg-slate-900 text-white' : isWeekend ? 'text-slate-400' : 'text-slate-600'
-                }`}>
-                  {day}
-                </span>
-                {uniqueAbsences.length > 0 && (
-                  <span className="text-[10px] font-semibold text-slate-400">{uniqueAbsences.length}</span>
-                )}
-              </div>
-              <div className="space-y-0.5">
-                {uniqueAbsences.slice(0, 3).map((ab) => {
-                  const colors = TYPE_COLORS[ab.type] || TYPE_COLORS.Holiday;
-                  return (
-                    <div
-                      key={`${ab.id}-${day}`}
-                      className={`group relative flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[11px] border cursor-pointer ${colors.bg} hover:shadow-sm transition-shadow`}
-                    >
-                      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${colors.dot}`} />
-                      <span className="truncate font-medium text-slate-700">
-                        {ab.last_name}
-                      </span>
-                      {/* Hover tooltip with actions */}
-                      <div className="absolute left-0 top-full mt-1 z-20 hidden group-hover:block">
-                        <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-3 min-w-[200px]">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Avatar firstName={ab.first_name} lastName={ab.last_name} avatarUrl={ab.avatar_url} size={28} />
-                            <div>
-                              <div className="text-xs font-semibold text-slate-800">{ab.first_name} {ab.last_name}</div>
-                              <div className="text-[10px] text-slate-400">{ab.project_name}</div>
-                            </div>
-                          </div>
-                          <div className="mb-2">
-                            <AbsenceBadge type={ab.type} dateFrom={ab.date_from} dateTo={ab.date_to} />
-                          </div>
-                          <div className="flex gap-1 border-t border-slate-100 pt-2">
-                            <button
-                              onClick={(e) => { e.stopPropagation(); openEdit(ab); }}
-                              className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-800 px-2 py-1 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer"
-                            >
-                              <IconPencil size={12} /> Edit
-                            </button>
-                            <button
-                              onClick={(e) => { e.stopPropagation(); handleDelete(ab.id); }}
-                              className="flex items-center gap-1 text-xs text-slate-500 hover:text-red-600 px-2 py-1 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
-                            >
-                              <IconTrash size={12} /> Delete
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-                {uniqueAbsences.length > 3 && (
-                  <div className="text-[10px] text-slate-400 font-medium px-1.5">
-                    +{uniqueAbsences.length - 3} more
-                  </div>
-                )}
-              </div>
-            </div>
-          );
-        }
+        const isWeekend = (day: number) => {
+          const dow = new Date(year, month - 1, day).getDay();
+          return dow === 0 || dow === 6;
+        };
 
         return (
           <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-            {/* Day names header */}
-            <div className="grid grid-cols-7 border-b border-slate-100">
-              {DAY_NAMES.map((name, i) => (
-                <div key={name} className={`py-2.5 text-center text-xs font-semibold uppercase tracking-wider ${
-                  i >= 5 ? 'text-slate-300' : 'text-slate-400'
-                }`}>
-                  {name}
+            <div className="overflow-x-auto">
+              <div className="min-w-max">
+                {/* Header row with day numbers */}
+                <div className="flex border-b border-slate-100 sticky top-0 bg-white z-10">
+                  <div className="w-[200px] shrink-0 px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider sticky left-0 bg-white border-r border-slate-100">
+                    Employee
+                  </div>
+                  {days.map((day) => {
+                    const weekend = isWeekend(day);
+                    const isToday = isCurrentMonth && day === todayDate;
+                    return (
+                      <div
+                        key={day}
+                        className={`w-8 shrink-0 py-2 text-center text-[11px] font-semibold ${
+                          weekend ? 'bg-slate-50 text-slate-300' : 'text-slate-400'
+                        }`}
+                      >
+                        <span className={isToday ? 'inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-900 text-white' : ''}>
+                          {day}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
-              ))}
+
+                {/* Employee rows */}
+                {rows.map((row, ri) => (
+                  <div key={row.key} className={`flex border-b border-slate-50 last:border-0 ${ri % 2 === 1 ? 'bg-slate-50/30' : ''}`}>
+                    <div className={`w-[200px] shrink-0 px-4 py-2 flex items-center gap-2 sticky left-0 border-r border-slate-100 ${ri % 2 === 1 ? 'bg-slate-50' : 'bg-white'}`}>
+                      <Avatar firstName={row.employee.first_name} lastName={row.employee.last_name} avatarUrl={row.employee.avatar_url} size={28} />
+                      <div className="min-w-0">
+                        <div className="text-xs font-semibold text-slate-800 truncate">{row.employee.last_name} {row.employee.first_name}</div>
+                        <div className="text-[10px] text-slate-400 truncate">{row.project}</div>
+                      </div>
+                    </div>
+                    {days.map((day) => {
+                      const weekend = isWeekend(day);
+                      const ab = row.dayAbsence.get(day);
+                      const colors = ab ? (TYPE_COLORS[ab.type] || TYPE_COLORS.Holiday) : null;
+                      return (
+                        <div
+                          key={day}
+                          className={`w-8 shrink-0 flex items-center justify-center py-2 ${weekend ? 'bg-slate-50/60' : ''}`}
+                        >
+                          {ab && colors && (
+                            <div
+                              onClick={() => openEdit(ab)}
+                              title={`${ab.first_name} ${ab.last_name} · ${ab.type}`}
+                              className={`group relative w-5 h-5 rounded-md ${colors.cell} cursor-pointer hover:ring-2 hover:ring-offset-1 hover:ring-slate-300 transition-all`}
+                            >
+                              <div className="absolute left-1/2 -translate-x-1/2 top-full mt-1 z-20 hidden group-hover:block">
+                                <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-2.5 min-w-[180px]">
+                                  <div className="text-xs font-semibold text-slate-800 mb-1">{ab.first_name} {ab.last_name}</div>
+                                  <div className="mb-2"><AbsenceBadge type={ab.type} dateFrom={ab.date_from} dateTo={ab.date_to} /></div>
+                                  <div className="flex gap-1 border-t border-slate-100 pt-1.5">
+                                    <button onClick={(e) => { e.stopPropagation(); openEdit(ab); }} className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-800 px-2 py-1 rounded-lg hover:bg-slate-50 cursor-pointer">
+                                      <IconPencil size={12} /> Edit
+                                    </button>
+                                    <button onClick={(e) => { e.stopPropagation(); handleDelete(ab.id); }} className="flex items-center gap-1 text-xs text-slate-500 hover:text-red-600 px-2 py-1 rounded-lg hover:bg-red-50 cursor-pointer">
+                                      <IconTrash size={12} /> Delete
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
             </div>
-            {/* Calendar grid */}
-            <div className="grid grid-cols-7">
-              {cells}
-            </div>
+
             {/* Legend */}
             <div className="px-4 py-3 border-t border-slate-100 bg-slate-50/50 flex items-center gap-4">
               {Object.entries(TYPE_COLORS).map(([type, colors]) => (
                 <div key={type} className="flex items-center gap-1.5">
-                  <span className={`w-2 h-2 rounded-full ${colors.dot}`} />
+                  <span className={`w-2.5 h-2.5 rounded ${colors.dot}`} />
                   <span className="text-xs text-slate-500">{type}</span>
                 </div>
               ))}
-              <span className="text-xs text-slate-400 ml-auto">{absences.length} absence{absences.length !== 1 ? 's' : ''}</span>
+              <span className="text-xs text-slate-400 ml-auto">{rows.length} employee{rows.length !== 1 ? 's' : ''} · {absences.length} absence{absences.length !== 1 ? 's' : ''}</span>
             </div>
           </div>
         );
