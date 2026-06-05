@@ -309,6 +309,7 @@ export default function AbsencesPage() {
 
         const CELL_W = 32;
         const ROW_H = 44;
+        const WEEKDAY_ABBR = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
         // Merge consecutive same-absence days into segments per row
         const rowSegments = rows.map((row) => {
@@ -340,14 +341,19 @@ export default function AbsencesPage() {
                     return (
                       <div
                         key={day}
-                        className={`shrink-0 py-2 text-center text-[11px] font-semibold ${
-                          weekend ? 'bg-slate-50 text-slate-300' : 'text-slate-400'
+                        className={`shrink-0 py-1.5 text-center border-r border-slate-200/70 last:border-r-0 ${
+                          weekend ? 'bg-slate-100' : ''
                         }`}
                         style={{ width: CELL_W }}
                       >
-                        <span className={isToday ? 'inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-900 text-white' : ''}>
-                          {day}
-                        </span>
+                        <div className={`text-[11px] font-semibold ${weekend ? 'text-slate-400' : 'text-slate-600'}`}>
+                          <span className={isToday ? 'inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-900 text-white' : ''}>
+                            {day}
+                          </span>
+                        </div>
+                        <div className={`text-[9px] font-medium uppercase tracking-tight ${weekend ? 'text-slate-300' : 'text-slate-400'}`}>
+                          {WEEKDAY_ABBR[new Date(year, month - 1, day).getDay()]}
+                        </div>
                       </div>
                     );
                   })}
@@ -364,10 +370,10 @@ export default function AbsencesPage() {
                       </div>
                     </div>
                     <div className="relative shrink-0" style={{ width: daysInMonth * CELL_W, height: ROW_H }}>
-                      {/* Weekend background */}
+                      {/* Day grid background */}
                       <div className="absolute inset-0 flex">
                         {days.map((day) => (
-                          <div key={day} className={`shrink-0 ${isWeekend(day) ? 'bg-slate-50/60' : ''}`} style={{ width: CELL_W }} />
+                          <div key={day} className={`shrink-0 border-r border-slate-100 last:border-r-0 ${isWeekend(day) ? 'bg-slate-100/80' : ''}`} style={{ width: CELL_W }} />
                         ))}
                       </div>
                       {/* Absence bars */}
