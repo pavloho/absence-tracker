@@ -569,9 +569,25 @@ export default function AbsencesPage() {
           )}
 
           <div className="flex gap-3 pt-2">
-            <button type="button" onClick={() => setModalOpen(false)} className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors">
-              Cancel
-            </button>
+            {editing ? (
+              <button
+                type="button"
+                onClick={async () => {
+                  if (!confirm('Delete this absence record?')) return;
+                  await fetch(`/api/absences/${editing.id}`, { method: 'DELETE' });
+                  setModalOpen(false);
+                  fetchData();
+                }}
+                className="flex items-center justify-center gap-1.5 px-4 py-2.5 border border-red-200 text-red-600 rounded-xl text-sm font-medium hover:bg-red-50 transition-colors"
+              >
+                <IconTrash size={16} />
+                Delete
+              </button>
+            ) : (
+              <button type="button" onClick={() => setModalOpen(false)} className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors">
+                Cancel
+              </button>
+            )}
             <button
               type="submit"
               disabled={formDateMode === 'multiple' && !editing && formDates.length === 0}
