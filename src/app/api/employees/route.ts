@@ -10,7 +10,9 @@ export async function GET(req: NextRequest) {
 
   if (projectId) {
     const { rows } = await sql`
-      SELECT e.*, COALESCE(
+      SELECT e.id, e.first_name, e.last_name, e.avatar_url, e.created_at,
+        to_char(e.end_date, 'YYYY-MM-DD') as end_date,
+        COALESCE(
         json_agg(json_build_object('id', p.id, 'name', p.name)) FILTER (WHERE p.id IS NOT NULL), '[]'
       ) as projects
       FROM employees e
@@ -24,7 +26,9 @@ export async function GET(req: NextRequest) {
   }
 
   const { rows } = await sql`
-    SELECT e.*, COALESCE(
+    SELECT e.id, e.first_name, e.last_name, e.avatar_url, e.created_at,
+      to_char(e.end_date, 'YYYY-MM-DD') as end_date,
+      COALESCE(
       json_agg(json_build_object('id', p.id, 'name', p.name)) FILTER (WHERE p.id IS NOT NULL), '[]'
     ) as projects
     FROM employees e
@@ -40,15 +44,15 @@ export async function POST(req: NextRequest) {
   const denied = await requireAuth();
   if (denied) return denied;
 
-  const { first_name, last_name, avatar_url, project_ids } = await req.json();
+  const { first_name, last_name, avatar_url, end_date, project_ids } = await req.json();
 
   if (!first_name?.trim() || !last_name?.trim()) {
     return NextResponse.json({ error: 'first_name and last_name are required' }, { status: 400 });
   }
 
   const { rows } = await sql`
-    INSERT INTO employees (first_name, last_name, avatar_url)
-    VALUES (${first_name}, ${last_name}, ${avatar_url || null})
+    INSERT INTO employees (first_name, last_name, avatar_url, end_date)
+    VALUES (${first_name}, ${last_name}, ${avatar_url || null}, ${end_date || null})
     RETURNING *
   `;
 

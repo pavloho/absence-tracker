@@ -16,6 +16,7 @@ interface Employee {
   first_name: string;
   last_name: string;
   avatar_url: string | null;
+  end_date: string | null;
   projects: Project[];
 }
 
@@ -28,6 +29,7 @@ export default function EmployeesPage() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [selectedProjects, setSelectedProjects] = useState<number[]>([]);
   const [filterProject, setFilterProject] = useState<string>('');
 
@@ -49,6 +51,7 @@ export default function EmployeesPage() {
     setFirstName('');
     setLastName('');
     setAvatarUrl('');
+    setEndDate('');
     setSelectedProjects([]);
     setModalOpen(true);
   };
@@ -58,6 +61,7 @@ export default function EmployeesPage() {
     setFirstName(emp.first_name);
     setLastName(emp.last_name);
     setAvatarUrl(emp.avatar_url || '');
+    setEndDate(emp.end_date || '');
     setSelectedProjects(emp.projects.map((p) => p.id));
     setModalOpen(true);
   };
@@ -68,6 +72,7 @@ export default function EmployeesPage() {
       first_name: firstName,
       last_name: lastName,
       avatar_url: avatarUrl || null,
+      end_date: endDate || null,
       project_ids: selectedProjects,
     };
 
@@ -153,8 +158,17 @@ export default function EmployeesPage() {
                 <tr key={emp.id} className={`border-b border-slate-50 last:border-0 ${i % 2 === 1 ? 'bg-slate-50/30' : ''}`}>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <Avatar firstName={emp.first_name} lastName={emp.last_name} avatarUrl={emp.avatar_url} size={36} />
-                      <span className="font-medium text-sm text-slate-800">{emp.first_name} {emp.last_name}</span>
+                      <div className={emp.end_date ? 'opacity-50' : ''}>
+                        <Avatar firstName={emp.first_name} lastName={emp.last_name} avatarUrl={emp.avatar_url} size={36} />
+                      </div>
+                      <div>
+                        <span className="font-medium text-sm text-slate-800">{emp.first_name} {emp.last_name}</span>
+                        {emp.end_date && (
+                          <span className="ml-2 inline-flex items-center px-2 py-0.5 bg-slate-100 text-slate-500 rounded-full text-[11px] font-medium">
+                            Left {emp.end_date.split('-').reverse().join('.')}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </td>
                   <td className="px-6 py-4">
@@ -212,6 +226,25 @@ export default function EmployeesPage() {
             </div>
           </div>
           <ImageUpload label="Avatar" value={avatarUrl} onChange={setAvatarUrl} />
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1.5">
+              Last working day <span className="text-slate-400 font-normal">(if left the company)</span>
+            </label>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-300"
+            />
+            {endDate && (
+              <p className="text-xs text-slate-400 mt-1.5">
+                Absences after this date will be hidden from reports.{' '}
+                <button type="button" onClick={() => setEndDate('')} className="text-slate-600 underline hover:text-slate-900">
+                  Clear
+                </button>
+              </p>
+            )}
+          </div>
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">Projects</label>
             <div className="flex flex-wrap gap-2">

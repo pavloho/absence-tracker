@@ -30,6 +30,7 @@ export async function GET(req: NextRequest) {
       FROM employee_projects ep
       JOIN employees e ON ep.employee_id = e.id
       WHERE ep.project_id = ${project.id}
+        AND (e.end_date IS NULL OR e.end_date >= ${startDate}::date)
     `;
     const totalEmployees = totalCountRows[0]?.total ?? 0;
 
@@ -42,6 +43,7 @@ export async function GET(req: NextRequest) {
       WHERE a.project_id = ${project.id}
         AND a.date_from <= ${endDate}::date
         AND COALESCE(a.date_to, a.date_from) >= ${startDate}::date
+        AND (e.end_date IS NULL OR a.date_from <= e.end_date)
       ORDER BY e.last_name, e.first_name, a.date_from
     `;
 

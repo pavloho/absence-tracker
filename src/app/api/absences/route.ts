@@ -25,6 +25,7 @@ export async function GET(req: NextRequest) {
       WHERE a.project_id = ${Number(projectId)}
         AND a.date_from <= ${endDate}::date
         AND COALESCE(a.date_to, a.date_from) >= ${startDate}::date
+        AND (e.end_date IS NULL OR a.date_from <= e.end_date)
       ORDER BY e.last_name, e.first_name, a.date_from
     `;
     return NextResponse.json(rows);
@@ -44,6 +45,7 @@ export async function GET(req: NextRequest) {
       JOIN projects p ON a.project_id = p.id
       WHERE a.date_from <= ${endDate}::date
         AND COALESCE(a.date_to, a.date_from) >= ${startDate}::date
+        AND (e.end_date IS NULL OR a.date_from <= e.end_date)
       ORDER BY e.last_name, e.first_name, a.date_from
     `;
     return NextResponse.json(rows);
@@ -56,6 +58,7 @@ export async function GET(req: NextRequest) {
       JOIN employees e ON a.employee_id = e.id
       JOIN projects p ON a.project_id = p.id
       WHERE a.project_id = ${Number(projectId)}
+        AND (e.end_date IS NULL OR a.date_from <= e.end_date)
       ORDER BY e.last_name, e.first_name, a.date_from
     `;
     return NextResponse.json(rows);
@@ -66,6 +69,7 @@ export async function GET(req: NextRequest) {
     FROM absences a
     JOIN employees e ON a.employee_id = e.id
     JOIN projects p ON a.project_id = p.id
+    WHERE (e.end_date IS NULL OR a.date_from <= e.end_date)
     ORDER BY e.last_name, e.first_name, a.date_from
   `;
   return NextResponse.json(rows);

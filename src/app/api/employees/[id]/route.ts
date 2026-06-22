@@ -8,14 +8,14 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
   const { id } = await params;
   const numId = Number(id);
-  const { first_name, last_name, avatar_url, project_ids } = await req.json();
+  const { first_name, last_name, avatar_url, end_date, project_ids } = await req.json();
 
   if (!first_name?.trim() || !last_name?.trim()) {
     return NextResponse.json({ error: 'first_name and last_name are required' }, { status: 400 });
   }
 
   const { rows } = await sql`
-    UPDATE employees SET first_name = ${first_name}, last_name = ${last_name}, avatar_url = ${avatar_url || null}
+    UPDATE employees SET first_name = ${first_name}, last_name = ${last_name}, avatar_url = ${avatar_url || null}, end_date = ${end_date || null}
     WHERE id = ${numId} RETURNING *
   `;
   if (rows.length === 0) return NextResponse.json({ error: 'Not found' }, { status: 404 });
