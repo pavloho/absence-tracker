@@ -119,7 +119,7 @@ function AdminInner({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      <main className={`flex-1 p-8 transition-[margin] duration-200 ${collapsed ? 'ml-16' : 'ml-60'}`}>{children}</main>
+      <main className={`flex-1 min-w-0 p-8 transition-[margin] duration-200 ${collapsed ? 'ml-16' : 'ml-60'}`}>{children}</main>
     </div>
   );
 }

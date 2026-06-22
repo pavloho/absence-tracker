@@ -201,12 +201,12 @@ export default function AbsencesPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Absences</h1>
           <p className="text-sm text-slate-400 mt-0.5">Record and manage employee absences</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 shrink-0">
           <button
             onClick={() => { setBulkProjectId(projectFilter || (projects[0]?.id ? String(projects[0].id) : '')); setBulkDate(''); setBulkType('Holiday'); setBulkModalOpen(true); }}
             className="border border-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-50 transition-colors flex items-center gap-2"
