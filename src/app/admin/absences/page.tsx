@@ -3,8 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Modal } from '@/components/Modal';
 import { Avatar } from '@/components/Avatar';
-import { AbsenceBadge } from '@/components/AbsenceBadge';
-import { IconPlus, IconCalendarPlus, IconPencil, IconTrash, IconConfetti, IconThermometer, IconPlane, IconChevronLeft, IconChevronRight, IconChevronDown } from '@tabler/icons-react';
+import { IconPlus, IconCalendarPlus, IconTrash, IconConfetti, IconThermometer, IconPlane, IconChevronLeft, IconChevronRight, IconChevronDown } from '@tabler/icons-react';
 
 interface Project { id: number; name: string; }
 interface Employee { id: number; first_name: string; last_name: string; avatar_url: string | null; projects: { id: number; name: string }[]; }
@@ -446,32 +445,22 @@ export default function AbsencesPage() {
                         const span = seg.endDay - seg.startDay + 1;
                         const left = (seg.startDay - 1) * CELL_W + 2;
                         const width = span * CELL_W - 4;
+                        const fmt = (d: string) => { const [, m, dd] = d.split('T')[0].split('-'); return `${dd}.${m}`; };
+                        const range = seg.ab.date_to && seg.ab.date_to !== seg.ab.date_from
+                          ? `${fmt(seg.ab.date_from)}–${fmt(seg.ab.date_to)}`
+                          : fmt(seg.ab.date_from);
                         return (
                           <div
                             key={`${seg.ab.id}-${seg.startDay}`}
                             onClick={() => openEdit(seg.ab)}
-                            title={`${seg.ab.first_name} ${seg.ab.last_name} · ${seg.ab.type}`}
-                            className={`group absolute top-1/2 -translate-y-1/2 h-7 rounded-md ${colors.cell} flex items-center justify-center gap-0.5 px-1 cursor-pointer hover:ring-2 hover:ring-offset-1 hover:ring-slate-300 transition-all`}
+                            title={`${seg.ab.first_name} ${seg.ab.last_name} · ${seg.ab.type} · ${range}`}
+                            className={`absolute top-1/2 -translate-y-1/2 h-7 rounded-md ${colors.cell} flex items-center justify-center gap-0.5 px-1 cursor-pointer hover:ring-2 hover:ring-offset-1 hover:ring-slate-300 transition-all`}
                             style={{ left, width }}
                           >
                             <span className="shrink-0">{colors.icon}</span>
                             {span > 1 && (
                               <span className="text-[11px] font-bold text-white whitespace-nowrap">{span}d</span>
                             )}
-                            <div className="absolute left-0 top-full mt-1 z-20 hidden group-hover:block">
-                              <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-2.5 min-w-[180px]">
-                                <div className="text-xs font-semibold text-slate-800 mb-1">{seg.ab.first_name} {seg.ab.last_name}</div>
-                                <div className="mb-2"><AbsenceBadge type={seg.ab.type} dateFrom={seg.ab.date_from} dateTo={seg.ab.date_to} /></div>
-                                <div className="flex gap-1 border-t border-slate-100 pt-1.5">
-                                  <button onClick={(e) => { e.stopPropagation(); openEdit(seg.ab); }} className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-800 px-2 py-1 rounded-lg hover:bg-slate-50 cursor-pointer">
-                                    <IconPencil size={12} /> Edit
-                                  </button>
-                                  <button onClick={(e) => { e.stopPropagation(); handleDelete(seg.ab.id); }} className="flex items-center gap-1 text-xs text-slate-500 hover:text-red-600 px-2 py-1 rounded-lg hover:bg-red-50 cursor-pointer">
-                                    <IconTrash size={12} /> Delete
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
                           </div>
                         );
                       })}
