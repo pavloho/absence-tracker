@@ -155,8 +155,7 @@ function ReportContent() {
               return (
                 <section
                   key={report.project.id}
-                  className="bg-white rounded-2xl border border-slate-200/70 overflow-hidden animate-fade-in"
-                  style={{ animationDelay: `${idx * 60}ms` }}
+                  className="bg-white rounded-2xl border border-slate-200/70 overflow-hidden"
                 >
                   {/* Project header */}
                   <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-2">
@@ -197,8 +196,12 @@ function ReportContent() {
 
                       {/* Rows - desktop: horizontal, mobile: stacked */}
                       <div className="divide-y divide-slate-50">
-                        {report.employees.map((emp) => (
-                          <div key={emp.id} className="px-4 sm:px-6 py-3 hover:bg-slate-50/50 transition-colors">
+                        {report.employees.map((emp, empIdx) => (
+                          <div
+                            key={emp.id}
+                            className="px-4 sm:px-6 py-3 hover:bg-slate-50/50 transition-colors animate-fade-in"
+                            style={{ animationDelay: `${idx * 60 + 120 + empIdx * 45}ms` }}
+                          >
                             {/* Desktop layout */}
                             <div className="hidden sm:flex items-start gap-3">
                               <div className="flex items-center gap-3 w-[220px] shrink-0 min-w-0 pt-0.5">
