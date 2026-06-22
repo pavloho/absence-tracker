@@ -227,11 +227,11 @@ export default function AbsencesPage() {
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3 mb-6">
         {/* Month stepper */}
-        <div className="flex items-center bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        <div className="flex items-center bg-white border border-slate-200 rounded-xl shadow-sm">
           <button
             onClick={prevMonth}
             aria-label="Previous month"
-            className="w-9 h-10 flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+            className="w-9 h-10 flex items-center justify-center rounded-l-xl text-slate-400 hover:text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
           >
             <IconChevronLeft size={18} />
           </button>
@@ -290,7 +290,7 @@ export default function AbsencesPage() {
           <button
             onClick={nextMonth}
             aria-label="Next month"
-            className="w-9 h-10 flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+            className="w-9 h-10 flex items-center justify-center rounded-r-xl text-slate-400 hover:text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
           >
             <IconChevronRight size={18} />
           </button>
@@ -409,7 +409,7 @@ export default function AbsencesPage() {
               <div className="min-w-max">
                 {/* Header row with day numbers */}
                 <div className="flex border-b border-slate-100 sticky top-0 bg-white z-10">
-                  <div className="w-[200px] shrink-0 px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider sticky left-0 bg-white border-r border-slate-100">
+                  <div className="w-[200px] shrink-0 px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider sticky left-0 z-20 bg-white border-r border-slate-100">
                     Employee
                   </div>
                   {days.map((day) => {
@@ -439,7 +439,7 @@ export default function AbsencesPage() {
                 {/* Employee rows */}
                 {rowSegments.map(({ row, segments }, ri) => (
                   <div key={row.key} className={`flex border-b border-slate-50 last:border-0 ${ri % 2 === 1 ? 'bg-slate-50/30' : ''}`}>
-                    <div className={`w-[200px] shrink-0 px-4 flex items-center gap-2 sticky left-0 border-r border-slate-100 ${ri % 2 === 1 ? 'bg-slate-50' : 'bg-white'}`} style={{ height: ROW_H }}>
+                    <div className={`w-[200px] shrink-0 px-4 flex items-center gap-2 sticky left-0 z-10 border-r border-slate-100 ${ri % 2 === 1 ? 'bg-slate-50' : 'bg-white'}`} style={{ height: ROW_H }}>
                       <Avatar firstName={row.employee.first_name} lastName={row.employee.last_name} avatarUrl={row.employee.avatar_url} size={28} />
                       <div className="min-w-0">
                         <div className="text-xs font-semibold text-slate-800 truncate">{row.employee.last_name} {row.employee.first_name}</div>
