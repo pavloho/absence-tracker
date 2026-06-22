@@ -4,6 +4,7 @@ import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Avatar } from '@/components/Avatar';
 import { AbsenceBadge } from '@/components/AbsenceBadge';
+import { CountUp } from '@/components/CountUp';
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 
 interface Absence {
@@ -171,11 +172,11 @@ function ReportContent() {
                       )}
                     </div>
                     <div className="flex items-center gap-2 text-[11px] sm:text-[12px]">
-                      <span className="bg-slate-100 text-slate-600 font-semibold px-2 py-0.5 rounded-md">
-                        {report.total_absentees} of {report.total_employees} absent
+                      <span className="bg-slate-100 text-slate-600 font-semibold px-2 py-0.5 rounded-md tabular-nums">
+                        <CountUp value={report.total_absentees} /> of <CountUp value={report.total_employees} /> absent
                       </span>
-                      <span className="bg-slate-100 text-slate-600 font-semibold px-2 py-0.5 rounded-md">
-                        {totalProjectDays} {totalProjectDays === 1 ? 'day' : 'days'} total
+                      <span className="bg-slate-100 text-slate-600 font-semibold px-2 py-0.5 rounded-md tabular-nums">
+                        <CountUp value={totalProjectDays} /> {totalProjectDays === 1 ? 'day' : 'days'} total
                       </span>
                     </div>
                   </div>
