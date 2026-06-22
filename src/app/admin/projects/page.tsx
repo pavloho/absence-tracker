@@ -93,7 +93,7 @@ export default function ProjectsPage() {
           {projects.map((p) => (
             <div
               key={p.id}
-              className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 hover:shadow-md transition-shadow"
+              className="bg-white rounded-2xl border border-slate-200 p-5 hover:border-slate-300 transition-colors"
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">

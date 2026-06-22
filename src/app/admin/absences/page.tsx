@@ -316,7 +316,7 @@ export default function AbsencesPage() {
           <div className="w-8 h-8 border-2 border-slate-200 border-t-slate-900 rounded-full animate-spin" />
         </div>
       ) : absences.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-slate-100 p-12 text-center">
+        <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center">
           <p className="text-slate-400">No absences for {MONTHS[month - 1]} {year}.</p>
         </div>
       ) : (() => {
@@ -391,11 +391,11 @@ export default function AbsencesPage() {
         });
 
         return (
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
             <div className="overflow-x-auto">
               <div className="min-w-max">
                 {/* Header row with day numbers */}
-                <div className="flex border-b border-slate-100 sticky top-0 bg-white z-10">
+                <div className="flex border-b border-slate-200 sticky top-0 bg-white z-10">
                   <div className="w-[200px] shrink-0 px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider sticky left-0 z-20 bg-white border-r border-slate-100">
                     Employee
                   </div>
@@ -405,8 +405,8 @@ export default function AbsencesPage() {
                     return (
                       <div
                         key={day}
-                        className={`shrink-0 py-1.5 text-center border-r border-slate-200/70 last:border-r-0 ${
-                          weekend ? 'bg-slate-100' : ''
+                        className={`shrink-0 py-1.5 text-center border-r border-slate-100 last:border-r-0 ${
+                          weekend ? 'bg-slate-50' : ''
                         }`}
                         style={{ width: CELL_W }}
                       >
@@ -425,7 +425,7 @@ export default function AbsencesPage() {
 
                 {/* Employee rows */}
                 {rowSegments.map(({ row, segments }, ri) => (
-                  <div key={row.key} className={`flex border-b border-slate-50 last:border-0 ${ri % 2 === 1 ? 'bg-slate-50/30' : ''}`}>
+                  <div key={row.key} className={`flex border-b border-slate-100 last:border-0 ${ri % 2 === 1 ? 'bg-slate-50/30' : ''}`}>
                     <div className={`w-[200px] shrink-0 px-4 flex items-center gap-2 sticky left-0 z-10 border-r border-slate-100 ${ri % 2 === 1 ? 'bg-slate-50' : 'bg-white'}`} style={{ height: ROW_H }}>
                       <Avatar firstName={row.employee.first_name} lastName={row.employee.last_name} avatarUrl={row.employee.avatar_url} size={28} />
                       <div className="min-w-0">
@@ -437,7 +437,7 @@ export default function AbsencesPage() {
                       {/* Day grid background */}
                       <div className="absolute inset-0 flex">
                         {days.map((day) => (
-                          <div key={day} className={`shrink-0 border-r border-slate-100 last:border-r-0 ${isWeekend(day) ? 'bg-slate-100/80' : ''}`} style={{ width: CELL_W }} />
+                          <div key={day} className={`shrink-0 border-r border-slate-100 last:border-r-0 ${isWeekend(day) ? 'bg-slate-50' : ''}`} style={{ width: CELL_W }} />
                         ))}
                       </div>
                       {/* Absence bars */}

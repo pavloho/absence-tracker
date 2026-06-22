@@ -141,7 +141,7 @@ export default function EmployeesPage() {
           <p className="text-slate-400">No employees yet.</p>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
           <table className="w-full">
             <thead>
               <tr className="border-b border-slate-100">

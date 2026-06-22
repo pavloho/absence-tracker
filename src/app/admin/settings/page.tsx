@@ -50,7 +50,7 @@ export default function SettingsPage() {
         <p className="text-sm text-slate-400 mt-0.5">Manage your account security</p>
       </div>
 
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm max-w-md">
+      <div className="bg-white rounded-2xl border border-slate-200 max-w-md">
         <div className="px-6 py-4 border-b border-slate-100">
           <h2 className="font-semibold text-slate-900">Change Password</h2>
         </div>
