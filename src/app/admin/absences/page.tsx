@@ -444,19 +444,19 @@ export default function AbsencesPage() {
                       {segments.map((seg) => {
                         const colors = TYPE_COLORS[seg.ab.type] || TYPE_COLORS.Holiday;
                         const span = seg.endDay - seg.startDay + 1;
-                        const left = (seg.startDay - 1) * CELL_W + 3;
-                        const width = span * CELL_W - 6;
+                        const left = (seg.startDay - 1) * CELL_W + 2;
+                        const width = span * CELL_W - 4;
                         return (
                           <div
                             key={`${seg.ab.id}-${seg.startDay}`}
                             onClick={() => openEdit(seg.ab)}
                             title={`${seg.ab.first_name} ${seg.ab.last_name} · ${seg.ab.type}`}
-                            className={`group absolute top-1/2 -translate-y-1/2 h-7 rounded-md ${colors.cell} flex items-center gap-1 px-1.5 cursor-pointer hover:ring-2 hover:ring-offset-1 hover:ring-slate-300 transition-all overflow-hidden`}
+                            className={`group absolute top-1/2 -translate-y-1/2 h-7 rounded-md ${colors.cell} flex items-center justify-center gap-0.5 px-1 cursor-pointer hover:ring-2 hover:ring-offset-1 hover:ring-slate-300 transition-all`}
                             style={{ left, width }}
                           >
                             <span className="shrink-0">{colors.icon}</span>
                             {span > 1 && (
-                              <span className="text-[11px] font-bold text-white whitespace-nowrap">{span} days</span>
+                              <span className="text-[11px] font-bold text-white whitespace-nowrap">{span}d</span>
                             )}
                             <div className="absolute left-0 top-full mt-1 z-20 hidden group-hover:block">
                               <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-2.5 min-w-[180px]">
