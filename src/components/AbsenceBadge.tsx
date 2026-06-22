@@ -40,9 +40,9 @@ export function AbsenceBadge({
 
   return (
     <span
-      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${style.bg}`}
+      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap ${style.bg}`}
     >
-      {style.icon}
+      <span className="shrink-0">{style.icon}</span>
       <span>{type}</span>
       <span className="opacity-75">{dateText}</span>
     </span>
