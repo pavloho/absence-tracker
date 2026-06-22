@@ -520,7 +520,7 @@ export default function AbsencesPage() {
               required
             >
               <option value="">Select employee...</option>
-              {employees.map((e) => (
+              {filteredEmployees.map((e) => (
                 <option key={e.id} value={e.id}>{e.first_name} {e.last_name}</option>
               ))}
             </select>
@@ -529,7 +529,16 @@ export default function AbsencesPage() {
             <label className="block text-sm font-medium text-slate-700 mb-1.5">Project</label>
             <select
               value={formProjectId}
-              onChange={(e) => setFormProjectId(e.target.value)}
+              onChange={(e) => {
+                const pid = e.target.value;
+                setFormProjectId(pid);
+                if (pid && formEmployeeId) {
+                  const emp = employees.find((x) => x.id === Number(formEmployeeId));
+                  if (emp && !emp.projects?.some((p) => p.id === Number(pid))) {
+                    setFormEmployeeId('');
+                  }
+                }
+              }}
               className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10"
               required
             >
