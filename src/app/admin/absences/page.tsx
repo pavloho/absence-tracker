@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Modal } from '@/components/Modal';
 import { Avatar } from '@/components/Avatar';
 import { AbsenceBadge } from '@/components/AbsenceBadge';
-import { IconPlus, IconCalendarPlus, IconPencil, IconTrash, IconConfetti, IconThermometer, IconPlane } from '@tabler/icons-react';
+import { IconPlus, IconCalendarPlus, IconPencil, IconTrash, IconConfetti, IconThermometer, IconPlane, IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 
 interface Project { id: number; name: string; }
 interface Employee { id: number; first_name: string; last_name: string; avatar_url: string | null; projects: { id: number; name: string }[]; }
@@ -186,8 +186,16 @@ export default function AbsencesPage() {
     ? employees.filter((e) => e.projects?.some((p) => p.id === Number(formProjectId)))
     : employees;
 
-  const years = [];
-  for (let y = now.getFullYear() - 2; y <= now.getFullYear() + 1; y++) years.push(y);
+  const prevMonth = () => {
+    if (month === 1) { setMonth(12); setYear(year - 1); }
+    else setMonth(month - 1);
+  };
+  const nextMonth = () => {
+    if (month === 12) { setMonth(1); setYear(year + 1); }
+    else setMonth(month + 1);
+  };
+  const goToday = () => { setMonth(now.getMonth() + 1); setYear(now.getFullYear()); };
+  const isCurrentMonthSelected = month === now.getMonth() + 1 && year === now.getFullYear();
 
   return (
     <div>
@@ -215,35 +223,53 @@ export default function AbsencesPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex gap-3 mb-6">
-        <select
-          value={projectFilter}
-          onChange={(e) => setProjectFilter(e.target.value)}
-          className="px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+      <div className="flex flex-wrap items-center gap-3 mb-6">
+        {/* Month stepper */}
+        <div className="flex items-center bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+          <button
+            onClick={prevMonth}
+            aria-label="Previous month"
+            className="w-9 h-10 flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+          >
+            <IconChevronLeft size={18} />
+          </button>
+          <div className="px-3 min-w-[140px] text-center text-sm font-semibold text-slate-800 tabular-nums select-none">
+            {MONTHS[month - 1]} {year}
+          </div>
+          <button
+            onClick={nextMonth}
+            aria-label="Next month"
+            className="w-9 h-10 flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+          >
+            <IconChevronRight size={18} />
+          </button>
+        </div>
+
+        {/* Today */}
+        <button
+          onClick={goToday}
+          disabled={isCurrentMonthSelected}
+          className="h-10 px-4 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-600 shadow-sm hover:bg-slate-50 hover:text-slate-900 transition-colors disabled:opacity-40 disabled:cursor-default cursor-pointer"
         >
-          <option value="">All Projects</option>
-          {projects.map((p) => (
-            <option key={p.id} value={p.id}>{p.name}</option>
-          ))}
-        </select>
-        <select
-          value={month}
-          onChange={(e) => setMonth(Number(e.target.value))}
-          className="px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10"
-        >
-          {MONTHS.map((name, i) => (
-            <option key={i} value={i + 1}>{name}</option>
-          ))}
-        </select>
-        <select
-          value={year}
-          onChange={(e) => setYear(Number(e.target.value))}
-          className="px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10"
-        >
-          {years.map((y) => (
-            <option key={y} value={y}>{y}</option>
-          ))}
-        </select>
+          Today
+        </button>
+
+        <div className="flex-1" />
+
+        {/* Project filter */}
+        <div className="relative">
+          <select
+            value={projectFilter}
+            onChange={(e) => setProjectFilter(e.target.value)}
+            className="appearance-none h-10 pl-4 pr-9 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10 cursor-pointer"
+          >
+            <option value="">All Projects</option>
+            {projects.map((p) => (
+              <option key={p.id} value={p.id}>{p.name}</option>
+            ))}
+          </select>
+          <IconChevronRight size={15} className="absolute right-3 top-1/2 -translate-y-1/2 rotate-90 text-slate-400 pointer-events-none" />
+        </div>
       </div>
 
       {/* Timeline */}
