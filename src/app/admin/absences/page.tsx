@@ -186,6 +186,8 @@ export default function AbsencesPage() {
     ? employees.filter((e) => e.projects?.some((p) => p.id === Number(formProjectId)))
     : employees;
 
+  const [pickerOpen, setPickerOpen] = useState(false);
+
   const prevMonth = () => {
     if (month === 1) { setMonth(12); setYear(year - 1); }
     else setMonth(month - 1);
@@ -233,8 +235,57 @@ export default function AbsencesPage() {
           >
             <IconChevronLeft size={18} />
           </button>
-          <div className="px-3 min-w-[140px] text-center text-sm font-semibold text-slate-800 tabular-nums select-none">
-            {MONTHS[month - 1]} {year}
+          <div className="relative">
+            <button
+              onClick={() => setPickerOpen((o) => !o)}
+              className="px-3 h-10 min-w-[140px] text-center text-sm font-semibold text-slate-800 tabular-nums hover:bg-slate-50 transition-colors cursor-pointer"
+            >
+              {MONTHS[month - 1]} {year}
+            </button>
+            {pickerOpen && (
+              <>
+                <div className="fixed inset-0 z-30" onClick={() => setPickerOpen(false)} />
+                <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 z-40 w-64 bg-white border border-slate-200 rounded-2xl shadow-lg p-3">
+                  {/* Year stepper */}
+                  <div className="flex items-center justify-between mb-3">
+                    <button
+                      onClick={() => setYear(year - 1)}
+                      aria-label="Previous year"
+                      className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                    >
+                      <IconChevronLeft size={16} />
+                    </button>
+                    <span className="text-sm font-bold text-slate-900 tabular-nums">{year}</span>
+                    <button
+                      onClick={() => setYear(year + 1)}
+                      aria-label="Next year"
+                      className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                    >
+                      <IconChevronRight size={16} />
+                    </button>
+                  </div>
+                  {/* Month grid */}
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {MONTHS.map((name, i) => {
+                      const active = month === i + 1;
+                      return (
+                        <button
+                          key={name}
+                          onClick={() => { setMonth(i + 1); setPickerOpen(false); }}
+                          className={`py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                            active
+                              ? 'bg-slate-900 text-white'
+                              : 'text-slate-600 hover:bg-slate-100'
+                          }`}
+                        >
+                          {name.slice(0, 3)}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
           <button
             onClick={nextMonth}
