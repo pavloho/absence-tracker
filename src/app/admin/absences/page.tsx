@@ -209,15 +209,12 @@ export default function AbsencesPage() {
         <div className="flex gap-2 shrink-0">
           <button
             onClick={() => { setBulkProjectId(projectFilter || (projects[0]?.id ? String(projects[0].id) : '')); setBulkDate(''); setBulkType('Holiday'); setBulkModalOpen(true); }}
-            className="border border-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-50 transition-colors flex items-center gap-2"
+            className="btn btn-secondary"
           >
             <IconCalendarPlus size={16} />
             Add Holiday for All
           </button>
-          <button
-            onClick={openCreate}
-            className="bg-slate-900 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-slate-800 transition-colors flex items-center gap-2"
-          >
+          <button onClick={openCreate} className="btn btn-primary">
             <IconPlus size={16} />
             Add Absence
           </button>
@@ -300,7 +297,7 @@ export default function AbsencesPage() {
         <button
           onClick={goToday}
           disabled={isCurrentMonthSelected}
-          className="h-10 px-4 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-600 shadow-sm hover:bg-slate-50 hover:text-slate-900 transition-colors disabled:opacity-40 disabled:cursor-default cursor-pointer"
+          className="btn btn-secondary"
         >
           Today
         </button>
@@ -308,19 +305,16 @@ export default function AbsencesPage() {
         <div className="flex-1" />
 
         {/* Project filter */}
-        <div className="relative">
-          <select
-            value={projectFilter}
-            onChange={(e) => setProjectFilter(e.target.value)}
-            className="appearance-none h-10 pl-4 pr-9 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10 cursor-pointer"
-          >
-            <option value="">All Projects</option>
-            {projects.map((p) => (
-              <option key={p.id} value={p.id}>{p.name}</option>
-            ))}
-          </select>
-          <IconChevronRight size={15} className="absolute right-3 top-1/2 -translate-y-1/2 rotate-90 text-slate-400 pointer-events-none" />
-        </div>
+        <select
+          value={projectFilter}
+          onChange={(e) => setProjectFilter(e.target.value)}
+          className="field-select"
+        >
+          <option value="">All Projects</option>
+          {projects.map((p) => (
+            <option key={p.id} value={p.id}>{p.name}</option>
+          ))}
+        </select>
       </div>
 
       {/* Timeline */}
@@ -516,7 +510,7 @@ export default function AbsencesPage() {
             <select
               value={formEmployeeId}
               onChange={(e) => handleEmployeeChange(e.target.value)}
-              className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+              className="field-select w-full"
               required
             >
               <option value="">Select employee...</option>
@@ -539,7 +533,7 @@ export default function AbsencesPage() {
                   }
                 }
               }}
-              className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+              className="field-select w-full"
               required
             >
               <option value="">Select project...</option>
@@ -556,7 +550,7 @@ export default function AbsencesPage() {
             <select
               value={formType}
               onChange={(e) => setFormType(e.target.value)}
-              className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+              className="field-select w-full"
             >
               <option value="Holiday">Holiday</option>
               <option value="Sick Leave">Sick Leave</option>
@@ -631,7 +625,7 @@ export default function AbsencesPage() {
                     const input = document.getElementById('multiDateInput') as HTMLInputElement;
                     if (input?.value) { addDate(input.value); input.value = ''; }
                   }}
-                  className="px-4 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-medium hover:bg-slate-800 transition-colors"
+                  className="btn btn-primary"
                 >
                   Add
                 </button>
@@ -664,20 +658,20 @@ export default function AbsencesPage() {
                   setModalOpen(false);
                   fetchData();
                 }}
-                className="flex items-center justify-center gap-1.5 px-4 py-2.5 border border-red-200 text-red-600 rounded-xl text-sm font-medium hover:bg-red-50 transition-colors"
+                className="btn btn-danger"
               >
                 <IconTrash size={16} />
                 Delete
               </button>
             ) : (
-              <button type="button" onClick={() => setModalOpen(false)} className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors">
+              <button type="button" onClick={() => setModalOpen(false)} className="btn btn-secondary flex-1">
                 Cancel
               </button>
             )}
             <button
               type="submit"
               disabled={formDateMode === 'multiple' && !editing && formDates.length === 0}
-              className="flex-1 bg-slate-900 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn btn-primary flex-1"
             >
               {editing ? 'Save Changes' : formDateMode === 'multiple' && formDates.length > 1 ? `Add ${formDates.length} Absences` : 'Add Absence'}
             </button>
@@ -694,7 +688,7 @@ export default function AbsencesPage() {
             <select
               value={bulkProjectId}
               onChange={(e) => setBulkProjectId(e.target.value)}
-              className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+              className="field-select w-full"
               required
             >
               <option value="">Select project...</option>
@@ -708,7 +702,7 @@ export default function AbsencesPage() {
             <select
               value={bulkType}
               onChange={(e) => setBulkType(e.target.value)}
-              className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+              className="field-select w-full"
             >
               <option value="Holiday">Holiday</option>
               <option value="Sick Leave">Sick Leave</option>
@@ -726,10 +720,10 @@ export default function AbsencesPage() {
             />
           </div>
           <div className="flex gap-3 pt-2">
-            <button type="button" onClick={() => setBulkModalOpen(false)} className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors">
+            <button type="button" onClick={() => setBulkModalOpen(false)} className="btn btn-secondary flex-1">
               Cancel
             </button>
-            <button type="submit" className="flex-1 bg-slate-900 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-slate-800 transition-colors">
+            <button type="submit" className="btn btn-primary flex-1">
               Add for All
             </button>
           </div>

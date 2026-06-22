@@ -74,10 +74,7 @@ export default function ProjectsPage() {
           <h1 className="text-2xl font-bold text-slate-900">Projects</h1>
           <p className="text-sm text-slate-400 mt-0.5">Manage your client projects</p>
         </div>
-        <button
-          onClick={openCreate}
-          className="bg-slate-900 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-slate-800 transition-colors flex items-center gap-2"
-        >
+        <button onClick={openCreate} className="btn btn-primary">
           <IconPlus size={16} />
           Add Project
         </button>
@@ -147,14 +144,11 @@ export default function ProjectsPage() {
             <button
               type="button"
               onClick={() => setModalOpen(false)}
-              className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+              className="btn btn-secondary flex-1"
             >
               Cancel
             </button>
-            <button
-              type="submit"
-              className="flex-1 bg-slate-900 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-slate-800 transition-colors"
-            >
+            <button type="submit" className="btn btn-primary flex-1">
               {editing ? 'Save Changes' : 'Create Project'}
             </button>
           </div>

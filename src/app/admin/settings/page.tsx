@@ -99,11 +99,7 @@ export default function SettingsPage() {
             />
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-slate-900 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-slate-800 transition-colors disabled:opacity-50"
-          >
+          <button type="submit" disabled={loading} className="btn btn-primary w-full">
             {loading ? 'Changing...' : 'Change Password'}
           </button>
         </form>

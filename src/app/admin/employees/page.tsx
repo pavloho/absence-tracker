@@ -112,10 +112,7 @@ export default function EmployeesPage() {
           <h1 className="text-2xl font-bold text-slate-900">Employees</h1>
           <p className="text-sm text-slate-400 mt-0.5">Manage employee records and project assignments</p>
         </div>
-        <button
-          onClick={openCreate}
-          className="bg-slate-900 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-slate-800 transition-colors flex items-center gap-2"
-        >
+        <button onClick={openCreate} className="btn btn-primary">
           <IconPlus size={16} />
           Add Employee
         </button>
@@ -126,7 +123,7 @@ export default function EmployeesPage() {
         <select
           value={filterProject}
           onChange={(e) => setFilterProject(e.target.value)}
-          className="px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+          className="field-select"
         >
           <option value="">All Projects</option>
           {projects.map((p) => (
@@ -164,7 +161,7 @@ export default function EmployeesPage() {
                       <div>
                         <span className="font-medium text-sm text-slate-800">{emp.first_name} {emp.last_name}</span>
                         {emp.end_date && (
-                          <span className="ml-2 inline-flex items-center px-2 py-0.5 bg-slate-100 text-slate-500 rounded-full text-[11px] font-medium">
+                          <span className="ml-2 inline-flex items-center px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full text-[11px] font-medium">
                             Left {emp.end_date.split('-').reverse().join('.')}
                           </span>
                         )}
@@ -265,17 +262,10 @@ export default function EmployeesPage() {
             </div>
           </div>
           <div className="flex gap-3 pt-2">
-            <button
-              type="button"
-              onClick={() => setModalOpen(false)}
-              className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
-            >
+            <button type="button" onClick={() => setModalOpen(false)} className="btn btn-secondary flex-1">
               Cancel
             </button>
-            <button
-              type="submit"
-              className="flex-1 bg-slate-900 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-slate-800 transition-colors"
-            >
+            <button type="submit" className="btn btn-primary flex-1">
               {editing ? 'Save Changes' : 'Add Employee'}
             </button>
           </div>
