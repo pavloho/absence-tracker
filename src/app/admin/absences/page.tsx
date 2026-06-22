@@ -454,8 +454,8 @@ export default function AbsencesPage() {
                             key={`${seg.ab.id}-${seg.startDay}`}
                             onClick={() => openEdit(seg.ab)}
                             title={`${seg.ab.first_name} ${seg.ab.last_name} · ${seg.ab.type} · ${range}`}
-                            className={`absolute top-1/2 -translate-y-1/2 h-7 rounded-md ${colors.cell} flex items-center justify-center gap-0.5 px-1 cursor-pointer hover:ring-2 hover:ring-offset-1 hover:ring-slate-300 transition-all`}
-                            style={{ left, width }}
+                            className={`animate-grow-bar absolute top-1/2 -translate-y-1/2 h-7 rounded-md ${colors.cell} flex items-center justify-center gap-0.5 px-1 cursor-pointer hover:ring-2 hover:ring-offset-1 hover:ring-slate-300 transition-all`}
+                            style={{ left, width, animationDelay: `${Math.min(seg.startDay * 0.012, 0.35)}s` }}
                           >
                             <span className="shrink-0">{colors.icon}</span>
                             {span > 1 && (

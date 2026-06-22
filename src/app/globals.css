@@ -49,6 +49,26 @@ body {
   animation: scaleIn 0.2s ease-out both;
 }
 
+@keyframes growBar {
+  from { transform: translateY(-50%) scaleX(0); opacity: 0; }
+  to { transform: translateY(-50%) scaleX(1); opacity: 1; }
+}
+
+/* Timeline bars grow in along the time axis */
+.animate-grow-bar {
+  transform-origin: left center;
+  animation: growBar 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-slide-in,
+  .animate-scale-in,
+  .animate-grow-bar {
+    animation: none;
+  }
+}
+
 /* ---------- Buttons (flat, crisp — Linear/Vercel vocabulary) ---------- */
 .btn {
   display: inline-flex;
