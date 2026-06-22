@@ -100,7 +100,7 @@ function ReportContent() {
               <select
                 value={activeProject ?? ''}
                 onChange={(e) => setActiveProject(e.target.value ? Number(e.target.value) : null)}
-                className="px-2 sm:px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs sm:text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900/10 cursor-pointer min-w-0"
+                className="field-select field-select-sm min-w-0 max-w-[150px] sm:max-w-none"
               >
                 <option value="">All projects</option>
                 {data.map((report) => (
