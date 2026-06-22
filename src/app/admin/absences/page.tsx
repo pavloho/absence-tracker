@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Modal } from '@/components/Modal';
 import { Avatar } from '@/components/Avatar';
 import { AbsenceBadge } from '@/components/AbsenceBadge';
-import { IconPlus, IconCalendarPlus, IconPencil, IconTrash, IconConfetti, IconThermometer, IconPlane, IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
+import { IconPlus, IconCalendarPlus, IconPencil, IconTrash, IconConfetti, IconThermometer, IconPlane, IconChevronLeft, IconChevronRight, IconChevronDown } from '@tabler/icons-react';
 
 interface Project { id: number; name: string; }
 interface Employee { id: number; first_name: string; last_name: string; avatar_url: string | null; projects: { id: number; name: string }[]; }
@@ -224,20 +224,21 @@ export default function AbsencesPage() {
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3 mb-6">
         {/* Month stepper */}
-        <div className="flex items-center bg-white border border-slate-200 rounded-xl shadow-sm">
+        <div className="flex items-center gap-1">
           <button
             onClick={prevMonth}
             aria-label="Previous month"
-            className="w-9 h-10 flex items-center justify-center rounded-l-xl text-slate-400 hover:text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+            className="btn-ghost w-9 h-9"
           >
             <IconChevronLeft size={18} />
           </button>
           <div className="relative">
             <button
               onClick={() => setPickerOpen((o) => !o)}
-              className="px-3 h-10 min-w-[140px] text-center text-sm font-semibold text-slate-800 tabular-nums hover:bg-slate-50 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-3 h-9 rounded-lg text-sm font-semibold text-slate-900 tabular-nums hover:bg-slate-100 transition-colors cursor-pointer"
             >
               {MONTHS[month - 1]} {year}
+              <IconChevronDown size={15} className={`text-slate-400 transition-transform duration-200 ${pickerOpen ? 'rotate-180' : ''}`} />
             </button>
             {pickerOpen && (
               <>
@@ -245,19 +246,11 @@ export default function AbsencesPage() {
                 <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 z-40 w-64 bg-white border border-slate-200 rounded-2xl shadow-lg p-3">
                   {/* Year stepper */}
                   <div className="flex items-center justify-between mb-3">
-                    <button
-                      onClick={() => setYear(year - 1)}
-                      aria-label="Previous year"
-                      className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
-                    >
+                    <button onClick={() => setYear(year - 1)} aria-label="Previous year" className="btn-ghost w-8 h-8">
                       <IconChevronLeft size={16} />
                     </button>
                     <span className="text-sm font-bold text-slate-900 tabular-nums">{year}</span>
-                    <button
-                      onClick={() => setYear(year + 1)}
-                      aria-label="Next year"
-                      className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
-                    >
+                    <button onClick={() => setYear(year + 1)} aria-label="Next year" className="btn-ghost w-8 h-8">
                       <IconChevronRight size={16} />
                     </button>
                   </div>
@@ -287,7 +280,7 @@ export default function AbsencesPage() {
           <button
             onClick={nextMonth}
             aria-label="Next month"
-            className="w-9 h-10 flex items-center justify-center rounded-r-xl text-slate-400 hover:text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+            className="btn-ghost w-9 h-9"
           >
             <IconChevronRight size={18} />
           </button>
