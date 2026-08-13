@@ -92,15 +92,16 @@ function ReportContent() {
     <div className="min-h-screen bg-[#f5f6f8]">
       {/* Header */}
       <header className="bg-white border-b border-slate-200/70 sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-2">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-2 sm:py-4 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 sm:gap-4 min-w-0">
             <h1 className="text-[11px] sm:text-[13px] font-bold text-slate-500 tracking-[0.08em] uppercase shrink-0">
               Absence Report
             </h1>
-            {!loading && data.length > 1 && (
+            {data.length > 1 && (
               <select
                 value={activeProject ?? ''}
                 onChange={(e) => setActiveProject(e.target.value ? Number(e.target.value) : null)}
+                aria-label="Filter by project"
                 className="field-select field-select-sm min-w-0 max-w-[150px] sm:max-w-none"
               >
                 <option value="">All projects</option>
@@ -112,21 +113,26 @@ function ReportContent() {
               </select>
             )}
           </div>
-          <div className="flex items-center gap-0.5 shrink-0">
+          <div className="flex items-center gap-1 shrink-0">
             <button
               onClick={prevMonth}
-              className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+              aria-label="Previous month"
+              className="btn-ghost w-11 h-11 sm:w-9 sm:h-9"
             >
-              <IconChevronLeft size={16} />
+              <IconChevronLeft size={18} />
             </button>
-            <span className="text-xs sm:text-sm font-bold text-slate-900 min-w-[100px] sm:min-w-[130px] text-center tracking-tight">
+            <span
+              aria-live="polite"
+              className="text-xs sm:text-sm font-bold text-slate-900 min-w-[100px] sm:min-w-[130px] text-center tracking-tight tabular-nums"
+            >
               {MONTHS[month]} {year}
             </span>
             <button
               onClick={nextMonth}
-              className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+              aria-label="Next month"
+              className="btn-ghost w-11 h-11 sm:w-9 sm:h-9"
             >
-              <IconChevronRight size={16} />
+              <IconChevronRight size={18} />
             </button>
           </div>
         </div>
@@ -138,7 +144,7 @@ function ReportContent() {
             <p className="text-base font-medium">Access denied</p>
             <p className="text-sm mt-1">This report requires a valid access link.</p>
           </div>
-        ) : loading ? (
+        ) : loading && data.length === 0 ? (
           <div className="flex items-center justify-center py-32">
             <div className="w-5 h-5 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin" />
           </div>
@@ -148,7 +154,10 @@ function ReportContent() {
             <p className="text-sm mt-1">Add projects in the admin panel to get started.</p>
           </div>
         ) : (
-          <div className="space-y-4 sm:space-y-6">
+          <div
+            aria-busy={loading}
+            className={`space-y-4 sm:space-y-6 transition-opacity duration-200 ${loading ? 'opacity-40' : 'opacity-100'}`}
+          >
             {data.filter((r) => activeProject === null || r.project.id === activeProject).map((report, idx) => {
               const totalProjectDays = report.employees.reduce((s, e) => s + e.total_days, 0);
 
