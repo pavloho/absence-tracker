@@ -101,6 +101,14 @@ body {
   pointer-events: none;
 }
 
+/* Compact size — matches .field-select-sm so toolbars line up */
+.btn-sm {
+  height: 2.125rem;
+  padding-inline: 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
+}
+
 .btn-primary {
   background: var(--color-slate-900);
   color: #fff;

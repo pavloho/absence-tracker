@@ -88,12 +88,15 @@ function ReportContent() {
     else setMonth(month + 1);
   };
 
+  const isCurrentMonth = month === now.getMonth() + 1 && year === now.getFullYear();
+  const goToday = () => { setMonth(now.getMonth() + 1); setYear(now.getFullYear()); };
+
   return (
     <div className="min-h-screen bg-[#f5f6f8]">
       {/* Header */}
       <header className="bg-white border-b border-slate-200/70 sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-2 sm:py-4 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-2 sm:py-4 flex flex-wrap items-center justify-between gap-y-2 gap-x-2">
+          <div className="flex items-center gap-2 sm:gap-4 min-w-0 w-full sm:w-auto">
             <h1 className="text-[11px] sm:text-[13px] font-bold text-slate-500 tracking-[0.08em] uppercase shrink-0">
               Absence Report
             </h1>
@@ -113,27 +116,34 @@ function ReportContent() {
               </select>
             )}
           </div>
-          <div className="flex items-center gap-1 shrink-0">
-            <button
-              onClick={prevMonth}
-              aria-label="Previous month"
-              className="btn-ghost w-11 h-11 sm:w-9 sm:h-9"
-            >
-              <IconChevronLeft size={18} />
-            </button>
-            <span
-              aria-live="polite"
-              className="text-xs sm:text-sm font-bold text-slate-900 min-w-[100px] sm:min-w-[130px] text-center tracking-tight tabular-nums"
-            >
-              {MONTHS[month]} {year}
-            </span>
-            <button
-              onClick={nextMonth}
-              aria-label="Next month"
-              className="btn-ghost w-11 h-11 sm:w-9 sm:h-9"
-            >
-              <IconChevronRight size={18} />
-            </button>
+          <div className="flex items-center gap-1 shrink-0 w-full sm:w-auto justify-between sm:justify-end">
+            {!isCurrentMonth && (
+              <button onClick={goToday} className="btn btn-secondary btn-sm">
+                Today
+              </button>
+            )}
+            <div className="flex items-center gap-1 ml-auto sm:ml-0">
+              <button
+                onClick={prevMonth}
+                aria-label="Previous month"
+                className="btn-ghost w-11 h-11 sm:w-9 sm:h-9"
+              >
+                <IconChevronLeft size={18} />
+              </button>
+              <span
+                aria-live="polite"
+                className="text-xs sm:text-sm font-bold text-slate-900 min-w-[100px] sm:min-w-[130px] text-center tracking-tight tabular-nums"
+              >
+                {MONTHS[month]} {year}
+              </span>
+              <button
+                onClick={nextMonth}
+                aria-label="Next month"
+                className="btn-ghost w-11 h-11 sm:w-9 sm:h-9"
+              >
+                <IconChevronRight size={18} />
+              </button>
+            </div>
           </div>
         </div>
       </header>
