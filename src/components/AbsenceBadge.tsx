@@ -9,7 +9,7 @@ const TYPE_STYLES: Record<string, { bg: string; icon: React.ReactNode }> = {
     icon: <IconConfetti size={14} />,
   },
   'Sick Leave': {
-    bg: 'bg-red-50 text-red-600 border border-red-200',
+    bg: 'bg-red-50 text-red-700 border border-red-200',
     icon: <IconThermometer size={14} />,
   },
   Vacation: {

@@ -203,7 +203,7 @@ export default function AbsencesPage() {
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Absences</h1>
-          <p className="text-sm text-slate-400 mt-0.5">Record and manage employee absences</p>
+          <p className="text-sm text-slate-500 mt-0.5">Record and manage employee absences</p>
         </div>
         <div className="flex gap-2 shrink-0">
           <button
@@ -237,7 +237,7 @@ export default function AbsencesPage() {
               className="flex items-center gap-1.5 px-3 h-9 rounded-lg text-sm font-semibold text-slate-900 tabular-nums hover:bg-slate-100 transition-colors cursor-pointer"
             >
               {MONTHS[month - 1]} {year}
-              <IconChevronDown size={15} className={`text-slate-400 transition-transform duration-200 ${pickerOpen ? 'rotate-180' : ''}`} />
+              <IconChevronDown size={15} className={`text-slate-500 transition-transform duration-200 ${pickerOpen ? 'rotate-180' : ''}`} />
             </button>
             {pickerOpen && (
               <>
@@ -316,7 +316,7 @@ export default function AbsencesPage() {
         </div>
       ) : absences.length === 0 ? (
         <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center">
-          <p className="text-slate-400">No absences for {MONTHS[month - 1]} {year}.</p>
+          <p className="text-slate-500">No absences for {MONTHS[month - 1]} {year}.</p>
         </div>
       ) : (() => {
         const daysInMonth = new Date(year, month, 0).getDate();
@@ -395,7 +395,7 @@ export default function AbsencesPage() {
               <div className="min-w-max">
                 {/* Header row with day numbers */}
                 <div className="flex border-b border-slate-200 sticky top-0 bg-white z-10">
-                  <div className="w-[200px] shrink-0 px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider sticky left-0 z-20 bg-white border-r border-slate-100">
+                  <div className="w-[200px] shrink-0 px-4 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider sticky left-0 z-20 bg-white border-r border-slate-100">
                     Employee
                   </div>
                   {days.map((day) => {
@@ -409,12 +409,12 @@ export default function AbsencesPage() {
                         }`}
                         style={{ width: CELL_W }}
                       >
-                        <div className={`text-[11px] font-semibold ${weekend ? 'text-slate-400' : 'text-slate-600'}`}>
+                        <div className={`text-[11px] font-semibold ${weekend ? 'text-slate-500' : 'text-slate-600'}`}>
                           <span className={isToday ? 'inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-900 text-white' : ''}>
                             {day}
                           </span>
                         </div>
-                        <div className={`text-[9px] font-medium uppercase tracking-tight ${weekend ? 'text-slate-300' : 'text-slate-400'}`}>
+                        <div className={`text-[9px] font-medium uppercase tracking-tight ${weekend ? 'text-slate-300' : 'text-slate-500'}`}>
                           {WEEKDAY_ABBR[new Date(year, month - 1, day).getDay()]}
                         </div>
                       </div>
@@ -429,7 +429,7 @@ export default function AbsencesPage() {
                       <Avatar firstName={row.employee.first_name} lastName={row.employee.last_name} avatarUrl={row.employee.avatar_url} size={28} />
                       <div className="min-w-0">
                         <div className="text-xs font-semibold text-slate-800 truncate">{row.employee.last_name} {row.employee.first_name}</div>
-                        <div className="text-[10px] text-slate-400 truncate">{row.project}</div>
+                        <div className="text-[10px] text-slate-500 truncate">{row.project}</div>
                       </div>
                     </div>
                     <div className="relative shrink-0" style={{ width: daysInMonth * CELL_W, height: ROW_H }}>
@@ -478,7 +478,7 @@ export default function AbsencesPage() {
                   <span className="text-xs text-slate-500">{type}</span>
                 </div>
               ))}
-              <span className="text-xs text-slate-400 ml-auto">{rows.length} employee{rows.length !== 1 ? 's' : ''} · {absences.length} absence{absences.length !== 1 ? 's' : ''}</span>
+              <span className="text-xs text-slate-500 ml-auto">{rows.length} employee{rows.length !== 1 ? 's' : ''} · {absences.length} absence{absences.length !== 1 ? 's' : ''}</span>
             </div>
           </div>
         );
@@ -583,7 +583,7 @@ export default function AbsencesPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Date To <span className="text-slate-400 font-normal">(optional)</span></label>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">Date To <span className="text-slate-500 font-normal">(optional)</span></label>
                 <input
                   type="date"
                   value={formDateTo}
@@ -617,7 +617,7 @@ export default function AbsencesPage() {
                   {formDates.map((d) => (
                     <span key={d} className="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 text-slate-700 rounded-full text-xs font-medium">
                       {d}
-                      <button type="button" onClick={() => removeDate(d)} className="text-slate-400 hover:text-red-500 transition-colors">
+                      <button type="button" onClick={() => removeDate(d)} className="text-slate-500 hover:text-red-500 transition-colors">
                         &times;
                       </button>
                     </span>
@@ -625,7 +625,7 @@ export default function AbsencesPage() {
                 </div>
               )}
               {formDates.length === 0 && (
-                <p className="text-xs text-slate-400">Pick dates and click Add</p>
+                <p className="text-xs text-slate-500">Pick dates and click Add</p>
               )}
             </div>
           )}

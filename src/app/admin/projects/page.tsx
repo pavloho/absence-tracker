@@ -72,7 +72,7 @@ export default function ProjectsPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Projects</h1>
-          <p className="text-sm text-slate-400 mt-0.5">Manage your client projects</p>
+          <p className="text-sm text-slate-500 mt-0.5">Manage your client projects</p>
         </div>
         <button onClick={openCreate} className="btn btn-primary">
           <IconPlus size={16} />
@@ -86,7 +86,7 @@ export default function ProjectsPage() {
         </div>
       ) : projects.length === 0 ? (
         <div className="bg-white rounded-2xl border border-slate-100 p-12 text-center">
-          <p className="text-slate-400">No projects yet. Create your first project.</p>
+          <p className="text-slate-500">No projects yet. Create your first project.</p>
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -100,7 +100,7 @@ export default function ProjectsPage() {
                   {p.logo_url ? (
                     <img src={p.logo_url} alt="" className="w-10 h-10 rounded-xl object-contain bg-slate-50 p-0.5" />
                   ) : (
-                    <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 font-bold text-sm">
+                    <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-sm">
                       {p.name.charAt(0)}
                     </div>
                   )}
@@ -110,13 +110,13 @@ export default function ProjectsPage() {
               <div className="flex gap-2 mt-4 pt-4 border-t border-slate-50">
                 <button
                   onClick={() => openEdit(p)}
-                  className="text-xs font-medium text-slate-400 hover:text-slate-700 transition-colors px-3 py-1.5 rounded-lg hover:bg-slate-50"
+                  className="text-xs font-medium text-slate-500 hover:text-slate-700 transition-colors px-3 py-1.5 rounded-lg hover:bg-slate-50"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => handleDelete(p.id)}
-                  className="text-xs font-medium text-slate-400 hover:text-red-500 transition-colors px-3 py-1.5 rounded-lg hover:bg-red-50"
+                  className="text-xs font-medium text-slate-500 hover:text-red-500 transition-colors px-3 py-1.5 rounded-lg hover:bg-red-50"
                 >
                   Delete
                 </button>

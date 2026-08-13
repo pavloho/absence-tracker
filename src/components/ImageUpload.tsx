@@ -37,7 +37,7 @@ export function ImageUpload({
   return (
     <div>
       <label className="block text-sm font-medium text-slate-700 mb-1.5">
-        {label} <span className="text-slate-400 font-normal">(optional)</span>
+        {label} <span className="text-slate-500 font-normal">(optional)</span>
       </label>
 
       {value ? (
@@ -58,7 +58,7 @@ export function ImageUpload({
             <button
               type="button"
               onClick={() => onChange('')}
-              className="text-xs font-medium text-slate-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition-colors"
+              className="text-xs font-medium text-slate-500 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition-colors"
             >
               <IconX size={14} />
             </button>
@@ -69,7 +69,7 @@ export function ImageUpload({
           type="button"
           onClick={() => inputRef.current?.click()}
           disabled={uploading}
-          className="w-full flex items-center justify-center gap-2 px-4 py-4 border-2 border-dashed border-slate-200 rounded-xl text-sm text-slate-400 hover:text-slate-600 hover:border-slate-300 transition-colors disabled:opacity-50"
+          className="w-full flex items-center justify-center gap-2 px-4 py-4 border-2 border-dashed border-slate-200 rounded-xl text-sm text-slate-500 hover:text-slate-600 hover:border-slate-300 transition-colors disabled:opacity-50"
         >
           {uploading ? (
             <>

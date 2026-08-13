@@ -47,7 +47,7 @@ export default function SettingsPage() {
     <div>
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-slate-900">Settings</h1>
-        <p className="text-sm text-slate-400 mt-0.5">Manage your account security</p>
+        <p className="text-sm text-slate-500 mt-0.5">Manage your account security</p>
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-200 max-w-md">

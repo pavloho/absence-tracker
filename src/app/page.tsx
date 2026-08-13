@@ -150,7 +150,7 @@ function ReportContent() {
 
       <main className="max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-8">
         {denied ? (
-          <div className="text-center py-32 text-slate-400">
+          <div className="text-center py-32 text-slate-500">
             <p className="text-base font-medium">Access denied</p>
             <p className="text-sm mt-1">This report requires a valid access link.</p>
           </div>
@@ -159,7 +159,7 @@ function ReportContent() {
             <div className="w-5 h-5 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin" />
           </div>
         ) : data.length === 0 ? (
-          <div className="text-center py-32 text-slate-400">
+          <div className="text-center py-32 text-slate-500">
             <p className="text-base font-medium">No projects found</p>
             <p className="text-sm mt-1">Add projects in the admin panel to get started.</p>
           </div>
@@ -201,13 +201,13 @@ function ReportContent() {
 
                   {/* Employee list */}
                   {report.employees.length === 0 ? (
-                    <div className="px-4 sm:px-6 py-10 text-center text-sm text-slate-400">
+                    <div className="px-4 sm:px-6 py-10 text-center text-sm text-slate-500">
                       No absences recorded for this period
                     </div>
                   ) : (
                     <>
                       {/* Table header - hidden on mobile */}
-                      <div className="hidden sm:flex px-6 py-2 items-center gap-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider border-b border-slate-50">
+                      <div className="hidden sm:flex px-6 py-2 items-center gap-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-50">
                         <div className="w-[220px] shrink-0">Employee</div>
                         <div className="w-[52px] shrink-0 text-center">Days</div>
                         <div className="flex-1 text-right">Absences</div>
@@ -287,7 +287,7 @@ function ReportContent() {
               );
             })}
 
-            <p className="text-center text-[11px] text-slate-400 pt-2">
+            <p className="text-center text-[11px] text-slate-600 pt-2">
               All absences recorded during {MONTHS[month]} {year}
             </p>
           </div>

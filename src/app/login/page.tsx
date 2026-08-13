@@ -39,7 +39,7 @@ export default function LoginPage() {
             <IconCalendar size={22} />
           </div>
           <h1 className="text-2xl font-bold text-slate-900">Absence Tracker</h1>
-          <p className="text-sm text-slate-400 mt-1">Sign in to the admin panel</p>
+          <p className="text-sm text-slate-500 mt-1">Sign in to the admin panel</p>
         </div>
 
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 space-y-4">

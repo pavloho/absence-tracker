@@ -110,7 +110,7 @@ export default function EmployeesPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Employees</h1>
-          <p className="text-sm text-slate-400 mt-0.5">Manage employee records and project assignments</p>
+          <p className="text-sm text-slate-500 mt-0.5">Manage employee records and project assignments</p>
         </div>
         <button onClick={openCreate} className="btn btn-primary">
           <IconPlus size={16} />
@@ -138,16 +138,16 @@ export default function EmployeesPage() {
         </div>
       ) : employees.length === 0 ? (
         <div className="bg-white rounded-2xl border border-slate-100 p-12 text-center">
-          <p className="text-slate-400">No employees yet.</p>
+          <p className="text-slate-500">No employees yet.</p>
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
           <table className="w-full">
             <thead>
               <tr className="border-b border-slate-100">
-                <th className="text-left text-xs font-semibold text-slate-400 uppercase tracking-wider px-6 py-3">Name</th>
-                <th className="text-left text-xs font-semibold text-slate-400 uppercase tracking-wider px-6 py-3">Projects</th>
-                <th className="text-right text-xs font-semibold text-slate-400 uppercase tracking-wider px-6 py-3">Actions</th>
+                <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-6 py-3">Name</th>
+                <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-6 py-3">Projects</th>
+                <th className="text-right text-xs font-semibold text-slate-500 uppercase tracking-wider px-6 py-3">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -180,13 +180,13 @@ export default function EmployeesPage() {
                   <td className="px-6 py-4 text-right">
                     <button
                       onClick={() => openEdit(emp)}
-                      className="text-xs font-medium text-slate-400 hover:text-slate-700 transition-colors px-3 py-1.5 rounded-lg hover:bg-slate-50"
+                      className="text-xs font-medium text-slate-500 hover:text-slate-700 transition-colors px-3 py-1.5 rounded-lg hover:bg-slate-50"
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => handleDelete(emp.id)}
-                      className="text-xs font-medium text-slate-400 hover:text-red-500 transition-colors px-3 py-1.5 rounded-lg hover:bg-red-50"
+                      className="text-xs font-medium text-slate-500 hover:text-red-500 transition-colors px-3 py-1.5 rounded-lg hover:bg-red-50"
                     >
                       Delete
                     </button>
@@ -225,7 +225,7 @@ export default function EmployeesPage() {
           <ImageUpload label="Avatar" value={avatarUrl} onChange={setAvatarUrl} />
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1.5">
-              Last working day <span className="text-slate-400 font-normal">(if left the company)</span>
+              Last working day <span className="text-slate-500 font-normal">(if left the company)</span>
             </label>
             <input
               type="date"
@@ -234,7 +234,7 @@ export default function EmployeesPage() {
               className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-300"
             />
             {endDate && (
-              <p className="text-xs text-slate-400 mt-1.5">
+              <p className="text-xs text-slate-500 mt-1.5">
                 Absences after this date will be hidden from reports.{' '}
                 <button type="button" onClick={() => setEndDate('')} className="text-slate-600 underline hover:text-slate-900">
                   Clear

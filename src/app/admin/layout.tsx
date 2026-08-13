@@ -65,7 +65,7 @@ function AdminInner({ children }: { children: React.ReactNode }) {
             onClick={toggleCollapsed}
             title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            className="w-9 h-9 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors shrink-0 cursor-pointer"
+            className="w-9 h-9 flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors shrink-0 cursor-pointer"
           >
             {collapsed ? <IconLayoutSidebarLeftExpand size={18} /> : <IconLayoutSidebarLeftCollapse size={18} />}
           </button>
@@ -100,16 +100,16 @@ function AdminInner({ children }: { children: React.ReactNode }) {
               onClick={() => signOut({ callbackUrl: '/login' })}
               title="Sign out"
               aria-label="Sign out"
-              className="w-full h-9 flex items-center justify-center rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
+              className="w-full h-9 flex items-center justify-center rounded-lg text-slate-500 hover:text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
             >
               <IconLogout size={16} />
             </button>
           ) : (
             <div className="flex items-center justify-between px-3 py-2">
-              <span className="text-xs text-slate-400 font-medium truncate">{session.user?.name}</span>
+              <span className="text-xs text-slate-500 font-medium truncate">{session.user?.name}</span>
               <button
                 onClick={() => signOut({ callbackUrl: '/login' })}
-                className="text-xs text-slate-400 hover:text-red-500 transition-colors font-medium flex items-center gap-1 shrink-0 cursor-pointer"
+                className="text-xs text-slate-500 hover:text-red-500 transition-colors font-medium flex items-center gap-1 shrink-0 cursor-pointer"
               >
                 <IconLogout size={14} />
                 Sign out
